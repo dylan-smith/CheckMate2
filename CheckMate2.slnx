@@ -1,0 +1,6 @@
+<Solution>
+  <Folder Name="/backend/">
+    <Project Path="backend/CheckMate2.Api.Tests/CheckMate2.Api.Tests.csproj" />
+    <Project Path="backend/CheckMate2.Api/CheckMate2.Api.csproj" />
+  </Folder>
+</Solution>
