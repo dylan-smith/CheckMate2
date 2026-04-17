@@ -2,21 +2,39 @@ using CheckMate2.Api.Data;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
+var useInMemoryDatabase = builder.Configuration.GetValue<bool>("UseInMemoryDatabase");
 
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
+var allowedOrigins = builder.Configuration
+    .GetSection("Cors:AllowedOrigins")
+    .Get<string[]>() ?? [];
+
 builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(policy =>
     {
-        policy.AllowAnyHeader()
-            .AllowAnyMethod()
-            .AllowAnyOrigin();
+        if (allowedOrigins.Length == 0)
+        {
+            return;
+        }
+
+        policy.WithOrigins(allowedOrigins)
+            .AllowAnyHeader()
+            .AllowAnyMethod();
     });
 });
 
-builder.Services.AddDbContext<ChecklistDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("CheckMate2")));
+if (useInMemoryDatabase)
+{
+    builder.Services.AddDbContext<ChecklistDbContext>(options =>
+        options.UseInMemoryDatabase("CheckMate2"));
+}
+else
+{
+    builder.Services.AddDbContext<ChecklistDbContext>(options =>
+        options.UseSqlServer(builder.Configuration.GetConnectionString("CheckMate2")));
+}
 
 var app = builder.Build();
 

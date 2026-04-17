@@ -12,7 +12,7 @@ A checklist management app with:
 
 ## Run backend
 ```bash
-cd /home/runner/work/CheckMate2/CheckMate2/backend/CheckMate2.Api
+cd backend/CheckMate2.Api
 dotnet run
 ```
 
@@ -20,7 +20,7 @@ API base URL (development): `http://localhost:5269`
 
 ## Run frontend
 ```bash
-cd /home/runner/work/CheckMate2/CheckMate2/frontend
+cd frontend
 npm install
 npm run dev
 ```

@@ -43,10 +43,8 @@ public class ChecklistsController(ChecklistDbContext dbContext) : ControllerBase
 
         if (trimmedName.Length == 0)
         {
-            return ValidationProblem(new Dictionary<string, string[]>
-            {
-                [nameof(request.Name)] = ["Checklist name is required."]
-            });
+            ModelState.AddModelError(nameof(request.Name), "Checklist name is required.");
+            return ValidationProblem(ModelState);
         }
 
         var duplicateName = await dbContext.Checklists
@@ -83,10 +81,8 @@ public class ChecklistsController(ChecklistDbContext dbContext) : ControllerBase
 
         if (trimmedName.Length == 0)
         {
-            return ValidationProblem(new Dictionary<string, string[]>
-            {
-                [nameof(request.Name)] = ["Checklist name is required."]
-            });
+            ModelState.AddModelError(nameof(request.Name), "Checklist name is required.");
+            return ValidationProblem(ModelState);
         }
 
         var duplicateName = await dbContext.Checklists
