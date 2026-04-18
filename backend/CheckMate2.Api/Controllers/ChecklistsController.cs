@@ -95,8 +95,24 @@ public class ChecklistsController(ChecklistDbContext dbContext) : ControllerBase
         }
 
         checklist.Name = trimmedName;
-        await dbContext.SaveChangesAsync();
 
+        try
+        {
+            await dbContext.SaveChangesAsync();
+        }
+        catch (DbUpdateException)
+        {
+            var duplicateNameAfterSaveFailure = await dbContext.Checklists
+                .AsNoTracking()
+                .AnyAsync(item => item.Id != id && item.Name == trimmedName);
+
+            if (duplicateNameAfterSaveFailure)
+            {
+                return Conflict(new { message = "A checklist with this name already exists." });
+            }
+
+            throw;
+        }
         return Ok(checklist);
     }
 
