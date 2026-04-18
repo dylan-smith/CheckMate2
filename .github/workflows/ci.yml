@@ -27,6 +27,7 @@ jobs:
           dotnet-version: '10.0.x'
 
       - name: Initialize CodeQL
+        if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
         uses: github/codeql-action/init@v3
         with:
           languages: csharp
@@ -45,6 +46,7 @@ jobs:
         run: dotnet test --no-build --verbosity normal
 
       - name: Perform CodeQL Analysis
+        if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
         uses: github/codeql-action/analyze@v3
         with:
           category: "/language:csharp"
@@ -66,6 +68,7 @@ jobs:
           cache-dependency-path: frontend/package-lock.json
 
       - name: Initialize CodeQL
+        if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
         uses: github/codeql-action/init@v3
         with:
           languages: javascript-typescript
@@ -84,6 +87,7 @@ jobs:
         run: npx eslint .
 
       - name: Perform CodeQL Analysis
+        if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
         uses: github/codeql-action/analyze@v3
         with:
           category: "/language:javascript-typescript"
