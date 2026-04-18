@@ -26,9 +26,9 @@ The `main` branch should be protected with the following rules:
 ### Backend
 
 ```bash
-cd backend/CheckMate2.Api
+dotnet restore
 dotnet build
-dotnet test ../CheckMate2.Api.Tests
+dotnet test
 ```
 
 ### Frontend
