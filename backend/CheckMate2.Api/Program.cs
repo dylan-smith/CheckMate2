@@ -10,9 +10,7 @@ var allowedOrigins = builder.Configuration
     .GetSection("Cors:AllowedOrigins")
     .Get<string[]>() ?? [];
 
-builder.Services.AddCors(options =>
-{
-    options.AddDefaultPolicy(policy =>
+builder.Services.AddCors(options => options.AddDefaultPolicy(policy =>
     {
         if (allowedOrigins.Length == 0)
         {
@@ -22,8 +20,7 @@ builder.Services.AddCors(options =>
         policy.WithOrigins(allowedOrigins)
             .AllowAnyHeader()
             .AllowAnyMethod();
-    });
-});
+    }));
 
 if (useInMemoryDatabase)
 {
