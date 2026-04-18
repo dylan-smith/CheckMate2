@@ -40,7 +40,6 @@ public class ChecklistsController(ChecklistDbContext dbContext) : ControllerBase
     public async Task<ActionResult<Checklist>> Create([FromBody] ChecklistRequest request)
     {
         var trimmedName = request.Name.Trim();
-        var normalizedName = trimmedName.ToUpperInvariant();
 
         if (trimmedName.Length == 0)
         {
@@ -48,7 +47,7 @@ public class ChecklistsController(ChecklistDbContext dbContext) : ControllerBase
             return ValidationProblem(ModelState);
         }
 
-        var duplicateName = await HasDuplicateNameAsync(normalizedName);
+        var duplicateName = await HasDuplicateNameAsync(trimmedName);
 
         if (duplicateName)
         {
@@ -67,7 +66,7 @@ public class ChecklistsController(ChecklistDbContext dbContext) : ControllerBase
         }
         catch (DbUpdateException)
         {
-            var isDuplicateName = await HasDuplicateNameAsync(normalizedName);
+            var isDuplicateName = await HasDuplicateNameAsync(trimmedName);
 
             if (isDuplicateName)
             {
@@ -91,7 +90,6 @@ public class ChecklistsController(ChecklistDbContext dbContext) : ControllerBase
         }
 
         var trimmedName = request.Name.Trim();
-        var normalizedName = trimmedName.ToUpperInvariant();
 
         if (trimmedName.Length == 0)
         {
@@ -99,7 +97,7 @@ public class ChecklistsController(ChecklistDbContext dbContext) : ControllerBase
             return ValidationProblem(ModelState);
         }
 
-        var duplicateName = await HasDuplicateNameAsync(normalizedName, id);
+        var duplicateName = await HasDuplicateNameAsync(trimmedName, id);
 
         if (duplicateName)
         {
@@ -114,7 +112,7 @@ public class ChecklistsController(ChecklistDbContext dbContext) : ControllerBase
         }
         catch (DbUpdateException)
         {
-            var isDuplicateName = await HasDuplicateNameAsync(normalizedName, id);
+            var isDuplicateName = await HasDuplicateNameAsync(trimmedName, id);
 
             if (isDuplicateName)
             {
@@ -126,18 +124,22 @@ public class ChecklistsController(ChecklistDbContext dbContext) : ControllerBase
         return Ok(checklist);
     }
 
-    private Task<bool> HasDuplicateNameAsync(string normalizedName, int? excludeId = null)
+    private Task<bool> HasDuplicateNameAsync(string name, int? excludeId = null)
     {
-        var query = dbContext.Checklists
-            .AsNoTracking()
-            .Where(item => item.Name.ToUpper() == normalizedName);
+        var query = dbContext.Checklists.AsNoTracking();
 
         if (excludeId is int id)
         {
             query = query.Where(item => item.Id != id);
         }
 
-        return query.AnyAsync();
+        if (dbContext.Database.IsSqlServer())
+        {
+            return query.AnyAsync(item => item.Name == name);
+        }
+
+        var normalizedName = name.ToUpperInvariant();
+        return query.AnyAsync(item => item.Name.ToUpper() == normalizedName);
     }
 
     [HttpDelete("{id:int}")]
