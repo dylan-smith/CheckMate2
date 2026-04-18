@@ -117,6 +117,17 @@ public class ChecklistsControllerTests
     }
 
     [Fact]
+    public async Task GetById_ReturnsNotFound_WhenChecklistDoesNotExist()
+    {
+        await using var dbContext = CreateDbContext();
+        var controller = new ChecklistsController(dbContext);
+
+        var result = await controller.GetById(999);
+
+        Assert.IsType<NotFoundResult>(result.Result);
+    }
+
+    [Fact]
     public async Task Delete_ReturnsNoContent_AndRemovesChecklist()
     {
         await using var dbContext = CreateDbContext();
@@ -130,6 +141,17 @@ public class ChecklistsControllerTests
 
         Assert.IsType<NoContentResult>(result);
         Assert.False(await dbContext.Checklists.AnyAsync(item => item.Id == checklist.Id));
+    }
+
+    [Fact]
+    public async Task Delete_ReturnsNotFound_WhenChecklistDoesNotExist()
+    {
+        await using var dbContext = CreateDbContext();
+        var controller = new ChecklistsController(dbContext);
+
+        var result = await controller.Delete(999);
+
+        Assert.IsType<NotFoundResult>(result);
     }
 
     private static ChecklistDbContext CreateDbContext()
