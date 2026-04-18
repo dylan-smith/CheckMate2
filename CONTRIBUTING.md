@@ -4,7 +4,7 @@ Thank you for your interest in contributing! This document outlines our process 
 
 ## Code Ownership
 
-We use a [CODEOWNERS](/.github/CODEOWNERS) file to automatically assign reviewers based on the files changed in a pull request:
+We use a [CODEOWNERS](.github/CODEOWNERS) file to automatically assign reviewers based on the files changed in a pull request:
 
 | Path | Description |
 |------|-------------|
@@ -16,11 +16,11 @@ When you open a pull request that touches files in these paths, the designated c
 
 ## Branch Protection
 
-The `main` branch is protected with the following rules:
+The `main` branch should be protected with the following rules (configured in GitHub repository settings under Settings → Branches → Branch protection rules):
 
-- **Pull request reviews required** — At least one approving review from a code owner is required before merging.
-- **No direct pushes** — All changes must go through a pull request.
-- **Status checks must pass** — The following CI checks are required before merging:
+- **Pull request reviews required** — At least one approving review from a code owner should be required before merging.
+- **No direct pushes** — All changes should go through a pull request.
+- **Status checks must pass** — The following CI checks should be required before merging:
   - **Backend Build & Test** — Backend build and test validation
   - **Frontend Build & Lint** — Frontend build and lint validation
 
