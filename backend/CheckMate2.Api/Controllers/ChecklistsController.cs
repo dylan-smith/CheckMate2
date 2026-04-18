@@ -124,7 +124,7 @@ public class ChecklistsController(ChecklistDbContext dbContext) : ControllerBase
         return Ok(checklist);
     }
 
-    private Task<bool> HasDuplicateNameAsync(string name, int? excludeId = null)
+    private async Task<bool> HasDuplicateNameAsync(string name, int? excludeId = null)
     {
         var query = dbContext.Checklists.AsNoTracking();
 
@@ -135,11 +135,15 @@ public class ChecklistsController(ChecklistDbContext dbContext) : ControllerBase
 
         if (dbContext.Database.IsSqlServer())
         {
-            return query.AnyAsync(item => item.Name == name);
+            return await query.AnyAsync(item => item.Name == name);
         }
 
-        var normalizedName = name.ToUpperInvariant();
-        return query.AnyAsync(item => item.Name.ToUpper() == normalizedName);
+        var existingNames = await query
+            .Select(item => item.Name)
+            .ToListAsync();
+
+        return existingNames.Any(existingName =>
+            string.Equals(existingName, name, StringComparison.OrdinalIgnoreCase));
     }
 
     [HttpDelete("{id:int}")]
