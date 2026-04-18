@@ -21,7 +21,6 @@ Content-Type: {{contentType}}
 Accept: {{contentType}}
 
 {
-  "id": 1,
   "name": "Updated checklist"
 }
 
