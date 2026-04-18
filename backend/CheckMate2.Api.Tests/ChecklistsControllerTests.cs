@@ -18,7 +18,7 @@ public class ChecklistsControllerTests
 
         var controller = new ChecklistsController(dbContext);
 
-        var result = await controller.Create(new ChecklistRequest { Name = "Daily" });
+        var result = await controller.Create(new ChecklistRequest { Name = "daily" });
 
         Assert.IsType<ConflictObjectResult>(result.Result);
     }
@@ -51,7 +51,7 @@ public class ChecklistsControllerTests
         var morning = await dbContext.Checklists.SingleAsync(item => item.Name == "Morning");
         var controller = new ChecklistsController(dbContext);
 
-        var result = await controller.Update(morning.Id, new ChecklistRequest { Name = "Evening" });
+        var result = await controller.Update(morning.Id, new ChecklistRequest { Name = "evening" });
 
         Assert.IsType<ConflictObjectResult>(result.Result);
     }

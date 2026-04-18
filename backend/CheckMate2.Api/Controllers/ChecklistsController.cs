@@ -40,6 +40,7 @@ public class ChecklistsController(ChecklistDbContext dbContext) : ControllerBase
     public async Task<ActionResult<Checklist>> Create([FromBody] ChecklistRequest request)
     {
         var trimmedName = request.Name.Trim();
+        var normalizedName = trimmedName.ToUpperInvariant();
 
         if (trimmedName.Length == 0)
         {
@@ -47,9 +48,7 @@ public class ChecklistsController(ChecklistDbContext dbContext) : ControllerBase
             return ValidationProblem(ModelState);
         }
 
-        var duplicateName = await dbContext.Checklists
-            .AsNoTracking()
-            .AnyAsync(item => item.Name == trimmedName);
+        var duplicateName = await HasDuplicateNameAsync(normalizedName);
 
         if (duplicateName)
         {
@@ -62,7 +61,21 @@ public class ChecklistsController(ChecklistDbContext dbContext) : ControllerBase
         };
 
         dbContext.Checklists.Add(checklist);
-        await dbContext.SaveChangesAsync();
+        try
+        {
+            await dbContext.SaveChangesAsync();
+        }
+        catch (DbUpdateException)
+        {
+            var isDuplicateName = await HasDuplicateNameAsync(normalizedName);
+
+            if (isDuplicateName)
+            {
+                return Conflict(new { message = "A checklist with this name already exists." });
+            }
+
+            throw;
+        }
 
         return CreatedAtAction(nameof(GetById), new { id = checklist.Id }, checklist);
     }
@@ -78,6 +91,7 @@ public class ChecklistsController(ChecklistDbContext dbContext) : ControllerBase
         }
 
         var trimmedName = request.Name.Trim();
+        var normalizedName = trimmedName.ToUpperInvariant();
 
         if (trimmedName.Length == 0)
         {
@@ -85,9 +99,7 @@ public class ChecklistsController(ChecklistDbContext dbContext) : ControllerBase
             return ValidationProblem(ModelState);
         }
 
-        var duplicateName = await dbContext.Checklists
-            .AsNoTracking()
-            .AnyAsync(item => item.Id != id && item.Name == trimmedName);
+        var duplicateName = await HasDuplicateNameAsync(normalizedName, id);
 
         if (duplicateName)
         {
@@ -102,11 +114,9 @@ public class ChecklistsController(ChecklistDbContext dbContext) : ControllerBase
         }
         catch (DbUpdateException)
         {
-            var duplicateNameAfterSaveFailure = await dbContext.Checklists
-                .AsNoTracking()
-                .AnyAsync(item => item.Id != id && item.Name == trimmedName);
+            var isDuplicateName = await HasDuplicateNameAsync(normalizedName, id);
 
-            if (duplicateNameAfterSaveFailure)
+            if (isDuplicateName)
             {
                 return Conflict(new { message = "A checklist with this name already exists." });
             }
@@ -114,6 +124,20 @@ public class ChecklistsController(ChecklistDbContext dbContext) : ControllerBase
             throw;
         }
         return Ok(checklist);
+    }
+
+    private Task<bool> HasDuplicateNameAsync(string normalizedName, int? excludeId = null)
+    {
+        var query = dbContext.Checklists
+            .AsNoTracking()
+            .Where(item => item.Name.ToUpper() == normalizedName);
+
+        if (excludeId is int id)
+        {
+            query = query.Where(item => item.Id != id);
+        }
+
+        return query.AnyAsync();
     }
 
     [HttpDelete("{id:int}")]
