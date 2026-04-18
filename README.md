@@ -23,7 +23,7 @@ API base URL (development): `http://localhost:5269`
 ## Run frontend
 ```bash
 cd frontend
-npm install
+npm ci
 npm run dev
 ```
 
