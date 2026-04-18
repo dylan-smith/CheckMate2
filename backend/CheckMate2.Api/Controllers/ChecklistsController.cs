@@ -138,12 +138,8 @@ public class ChecklistsController(ChecklistDbContext dbContext) : ControllerBase
             return await query.AnyAsync(item => item.Name == name);
         }
 
-        var existingNames = await query
-            .Select(item => item.Name)
-            .ToListAsync();
-
-        return existingNames.Any(existingName =>
-            string.Equals(existingName, name, StringComparison.OrdinalIgnoreCase));
+        return await query.AnyAsync(item =>
+            string.Equals(item.Name, name, StringComparison.OrdinalIgnoreCase));
     }
 
     [HttpDelete("{id:int}")]
