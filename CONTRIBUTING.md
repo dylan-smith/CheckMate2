@@ -3,10 +3,12 @@
 Thank you for your interest in contributing! This document outlines our process for branch protection and CI requirements.
 
 ## Branch Protection
+The `main` branch should be protected with the following rules:
 
-The `main` branch should be protected with the following rules (configured in GitHub repository settings under Settings → Branches → Branch protection rules):
+> These rules must be configured in GitHub branch protection settings for the repository and may not be present in forks by default.
 
-- **No direct pushes** — All changes should go through a pull request.
+- **Pull request reviews required** — At least one approving review from a code owner is required before merging.
+- **No direct pushes** — All changes must go through a pull request.
 - **Status checks must pass** — The following CI checks should be required before merging:
   - **Backend Build & Test** — Backend build and test validation
   - **Frontend Build & Lint** — Frontend build and lint validation
