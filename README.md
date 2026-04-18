@@ -30,7 +30,7 @@ dotnet run
 
 The API starts at `http://localhost:5269` by default. In development mode an in-memory database is used automatically (configured in `appsettings.Development.json`).
 
-To use SQL Server instead, set `UseInMemoryDatabase` to `false` and update the connection string in `appsettings.json`.
+To use SQL Server for local development instead, set `UseInMemoryDatabase` to `false` and update the connection string in `backend/CheckMate2.Api/appsettings.Development.json`.
 
 ### Frontend
 
