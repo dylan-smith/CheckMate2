@@ -35,7 +35,7 @@ dotnet test ../CheckMate2.Api.Tests
 
 ```bash
 cd frontend
-npm install
+npm ci
 npm run lint
 npm run build
 ```
