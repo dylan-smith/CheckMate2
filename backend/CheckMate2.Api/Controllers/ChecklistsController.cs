@@ -34,7 +34,7 @@ public class ChecklistsController(ChecklistDbContext dbContext) : ControllerBase
     [HttpPost]
     public async Task<ActionResult<Checklist>> Create([FromBody] ChecklistRequest request)
     {
-        string trimmedName = request.Name.Trim();
+        var trimmedName = request.Name.Trim();
 
         if (trimmedName.Length == 0)
         {
@@ -42,7 +42,7 @@ public class ChecklistsController(ChecklistDbContext dbContext) : ControllerBase
             return ValidationProblem(ModelState);
         }
 
-        bool duplicateName = await HasDuplicateNameAsync(trimmedName);
+        var duplicateName = await HasDuplicateNameAsync(trimmedName);
 
         if (duplicateName)
         {
@@ -61,7 +61,7 @@ public class ChecklistsController(ChecklistDbContext dbContext) : ControllerBase
         }
         catch (DbUpdateException)
         {
-            bool isDuplicateName = await HasDuplicateNameAsync(trimmedName);
+            var isDuplicateName = await HasDuplicateNameAsync(trimmedName);
 
             if (isDuplicateName)
             {
@@ -84,7 +84,7 @@ public class ChecklistsController(ChecklistDbContext dbContext) : ControllerBase
             return NotFound();
         }
 
-        string trimmedName = request.Name.Trim();
+        var trimmedName = request.Name.Trim();
 
         if (trimmedName.Length == 0)
         {
@@ -92,7 +92,7 @@ public class ChecklistsController(ChecklistDbContext dbContext) : ControllerBase
             return ValidationProblem(ModelState);
         }
 
-        bool duplicateName = await HasDuplicateNameAsync(trimmedName, id);
+        var duplicateName = await HasDuplicateNameAsync(trimmedName, id);
 
         if (duplicateName)
         {
@@ -107,7 +107,7 @@ public class ChecklistsController(ChecklistDbContext dbContext) : ControllerBase
         }
         catch (DbUpdateException)
         {
-            bool isDuplicateName = await HasDuplicateNameAsync(trimmedName, id);
+            var isDuplicateName = await HasDuplicateNameAsync(trimmedName, id);
 
             if (isDuplicateName)
             {

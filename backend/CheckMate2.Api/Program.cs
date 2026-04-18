@@ -1,12 +1,12 @@
 using CheckMate2.Api.Data;
 using Microsoft.EntityFrameworkCore;
 
-WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
-bool useInMemoryDatabase = builder.Configuration.GetValue<bool>("UseInMemoryDatabase");
+var builder = WebApplication.CreateBuilder(args);
+var useInMemoryDatabase = builder.Configuration.GetValue<bool>("UseInMemoryDatabase");
 
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
-string[] allowedOrigins = builder.Configuration
+var allowedOrigins = builder.Configuration
     .GetSection("Cors:AllowedOrigins")
     .Get<string[]>() ?? [];
 
@@ -33,16 +33,16 @@ else
         options.UseSqlServer(builder.Configuration.GetConnectionString("CheckMate2")));
 }
 
-WebApplication app = builder.Build();
+var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
 }
 
-using (IServiceScope scope = app.Services.CreateScope())
+using (var scope = app.Services.CreateScope())
 {
-    ChecklistDbContext dbContext = scope.ServiceProvider.GetRequiredService<ChecklistDbContext>();
+    var dbContext = scope.ServiceProvider.GetRequiredService<ChecklistDbContext>();
     dbContext.Database.EnsureCreated();
 }
 
