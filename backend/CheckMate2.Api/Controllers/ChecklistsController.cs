@@ -131,7 +131,7 @@ public class ChecklistsController(ChecklistDbContext dbContext) : ControllerBase
         return dbContext.Database.IsSqlServer()
             ? await query.AnyAsync(item => item.Name == name)
             : await query.AnyAsync(item =>
-            string.Equals(item.Name, name, StringComparison.OrdinalIgnoreCase));
+                string.Equals(item.Name, name, StringComparison.OrdinalIgnoreCase));
     }
 
     [HttpDelete("{id:int}")]
