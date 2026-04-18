@@ -6,7 +6,7 @@ If you discover a security vulnerability in CheckMate2, please report it respons
 
 **Do not** open a public GitHub issue for security vulnerabilities.
 
-Instead, please report vulnerabilities by emailing the repository owner or by using [GitHub's private vulnerability reporting](https://docs.github.com/en/code-security/security-advisories/guidance-on-reporting-and-writing-information-about-vulnerabilities/privately-reporting-a-security-vulnerability) feature on this repository.
+Instead, please use [GitHub's private vulnerability reporting](https://docs.github.com/en/code-security/security-advisories/guidance-on-reporting-and-writing-information-about-vulnerabilities/privately-reporting-a-security-vulnerability) feature on this repository.
 
 ### What to Include
 
