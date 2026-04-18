@@ -1,6 +1,33 @@
 @CheckMate2.Api_HostAddress = http://localhost:5269
+@contentType = application/json
 
-GET {{CheckMate2.Api_HostAddress}}/weatherforecast/
-Accept: application/json
+GET {{CheckMate2.Api_HostAddress}}/api/checklists
+Accept: {{contentType}}
+
+###
+
+POST {{CheckMate2.Api_HostAddress}}/api/checklists
+Content-Type: {{contentType}}
+Accept: {{contentType}}
+
+{
+  "name": "Sample checklist"
+}
+
+###
+
+PUT {{CheckMate2.Api_HostAddress}}/api/checklists/1
+Content-Type: {{contentType}}
+Accept: {{contentType}}
+
+{
+  "id": 1,
+  "name": "Updated checklist"
+}
+
+###
+
+DELETE {{CheckMate2.Api_HostAddress}}/api/checklists/1
+Accept: {{contentType}}
 
 ###
