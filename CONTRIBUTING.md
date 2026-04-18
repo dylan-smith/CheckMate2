@@ -21,9 +21,8 @@ The `main` branch is protected with the following rules:
 - **Pull request reviews required** — At least one approving review from a code owner is required before merging.
 - **No direct pushes** — All changes must go through a pull request.
 - **Status checks must pass** — The following CI checks are required before merging:
-  - **CI** — Build and test for both backend and frontend
-  - **Lint** — Code style and linting checks
-  - **CodeQL** — Security and code quality analysis
+  - **Backend Build & Test** — Backend build and test validation
+  - **Frontend Build & Lint** — Frontend build and lint validation
 
 ## How to Contribute
 
