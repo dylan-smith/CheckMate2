@@ -12,7 +12,7 @@ public class ChecklistsControllerTests
     [Fact]
     public async Task Create_ReturnsConflict_WhenNameAlreadyExists()
     {
-        await using var dbContext = CreateDbContext();
+        await using ChecklistDbContext dbContext = CreateDbContext();
         dbContext.Checklists.Add(new Checklist { Name = "Daily" });
         await dbContext.SaveChangesAsync();
 
@@ -26,7 +26,7 @@ public class ChecklistsControllerTests
     [Fact]
     public async Task Create_TrimsName_AndPersistsChecklist()
     {
-        await using var dbContext = CreateDbContext();
+        await using ChecklistDbContext dbContext = CreateDbContext();
         var controller = new ChecklistsController(dbContext);
 
         var result = await controller.Create(new ChecklistRequest { Name = "  Weekly  " });
@@ -42,7 +42,7 @@ public class ChecklistsControllerTests
     [Fact]
     public async Task Update_ReturnsConflict_WhenAnotherChecklistUsesName()
     {
-        await using var dbContext = CreateDbContext();
+        await using ChecklistDbContext dbContext = CreateDbContext();
         dbContext.Checklists.AddRange(
             new Checklist { Name = "Morning" },
             new Checklist { Name = "Evening" });
@@ -59,7 +59,7 @@ public class ChecklistsControllerTests
     [Fact]
     public async Task Update_ReturnsOk_AndUpdatesChecklist()
     {
-        await using var dbContext = CreateDbContext();
+        await using ChecklistDbContext dbContext = CreateDbContext();
         var checklist = new Checklist { Name = "Morning" };
         dbContext.Checklists.Add(checklist);
         await dbContext.SaveChangesAsync();
@@ -79,7 +79,7 @@ public class ChecklistsControllerTests
     [Fact]
     public async Task GetAll_ReturnsChecklistsOrderedByName()
     {
-        await using var dbContext = CreateDbContext();
+        await using ChecklistDbContext dbContext = CreateDbContext();
         dbContext.Checklists.AddRange(
             new Checklist { Name = "Zulu" },
             new Checklist { Name = "Alpha" });
@@ -101,7 +101,7 @@ public class ChecklistsControllerTests
     [Fact]
     public async Task GetById_ReturnsChecklist_WhenChecklistExists()
     {
-        await using var dbContext = CreateDbContext();
+        await using ChecklistDbContext dbContext = CreateDbContext();
         var checklist = new Checklist { Name = "Daily" };
         dbContext.Checklists.Add(checklist);
         await dbContext.SaveChangesAsync();
@@ -119,7 +119,7 @@ public class ChecklistsControllerTests
     [Fact]
     public async Task GetById_ReturnsNotFound_WhenChecklistDoesNotExist()
     {
-        await using var dbContext = CreateDbContext();
+        await using ChecklistDbContext dbContext = CreateDbContext();
         var controller = new ChecklistsController(dbContext);
 
         var result = await controller.GetById(999);
@@ -130,7 +130,7 @@ public class ChecklistsControllerTests
     [Fact]
     public async Task Delete_ReturnsNoContent_AndRemovesChecklist()
     {
-        await using var dbContext = CreateDbContext();
+        await using ChecklistDbContext dbContext = CreateDbContext();
         var checklist = new Checklist { Name = "Daily" };
         dbContext.Checklists.Add(checklist);
         await dbContext.SaveChangesAsync();
@@ -146,7 +146,7 @@ public class ChecklistsControllerTests
     [Fact]
     public async Task Delete_ReturnsNotFound_WhenChecklistDoesNotExist()
     {
-        await using var dbContext = CreateDbContext();
+        await using ChecklistDbContext dbContext = CreateDbContext();
         var controller = new ChecklistsController(dbContext);
 
         var result = await controller.Delete(999);

@@ -28,18 +28,13 @@ public class ChecklistsController(ChecklistDbContext dbContext) : ControllerBase
             .AsNoTracking()
             .FirstOrDefaultAsync(item => item.Id == id);
 
-        if (checklist is null)
-        {
-            return NotFound();
-        }
-
-        return Ok(checklist);
+        return checklist is null ? (ActionResult<Checklist>)NotFound() : Ok(checklist);
     }
 
     [HttpPost]
     public async Task<ActionResult<Checklist>> Create([FromBody] ChecklistRequest request)
     {
-        var trimmedName = request.Name.Trim();
+        string trimmedName = request.Name.Trim();
 
         if (trimmedName.Length == 0)
         {
@@ -47,7 +42,7 @@ public class ChecklistsController(ChecklistDbContext dbContext) : ControllerBase
             return ValidationProblem(ModelState);
         }
 
-        var duplicateName = await HasDuplicateNameAsync(trimmedName);
+        bool duplicateName = await HasDuplicateNameAsync(trimmedName);
 
         if (duplicateName)
         {
@@ -66,7 +61,7 @@ public class ChecklistsController(ChecklistDbContext dbContext) : ControllerBase
         }
         catch (DbUpdateException)
         {
-            var isDuplicateName = await HasDuplicateNameAsync(trimmedName);
+            bool isDuplicateName = await HasDuplicateNameAsync(trimmedName);
 
             if (isDuplicateName)
             {
@@ -89,7 +84,7 @@ public class ChecklistsController(ChecklistDbContext dbContext) : ControllerBase
             return NotFound();
         }
 
-        var trimmedName = request.Name.Trim();
+        string trimmedName = request.Name.Trim();
 
         if (trimmedName.Length == 0)
         {
@@ -97,7 +92,7 @@ public class ChecklistsController(ChecklistDbContext dbContext) : ControllerBase
             return ValidationProblem(ModelState);
         }
 
-        var duplicateName = await HasDuplicateNameAsync(trimmedName, id);
+        bool duplicateName = await HasDuplicateNameAsync(trimmedName, id);
 
         if (duplicateName)
         {
@@ -112,7 +107,7 @@ public class ChecklistsController(ChecklistDbContext dbContext) : ControllerBase
         }
         catch (DbUpdateException)
         {
-            var isDuplicateName = await HasDuplicateNameAsync(trimmedName, id);
+            bool isDuplicateName = await HasDuplicateNameAsync(trimmedName, id);
 
             if (isDuplicateName)
             {
@@ -133,12 +128,9 @@ public class ChecklistsController(ChecklistDbContext dbContext) : ControllerBase
             query = query.Where(item => item.Id != id);
         }
 
-        if (dbContext.Database.IsSqlServer())
-        {
-            return await query.AnyAsync(item => item.Name == name);
-        }
-
-        return await query.AnyAsync(item =>
+        return dbContext.Database.IsSqlServer()
+            ? await query.AnyAsync(item => item.Name == name)
+            : await query.AnyAsync(item =>
             string.Equals(item.Name, name, StringComparison.OrdinalIgnoreCase));
     }
 
