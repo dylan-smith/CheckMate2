@@ -27,6 +27,17 @@ updates:
       - "dependencies"
       - "backend"
 
+  # GitHub Actions dependencies
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 10
+    reviewers:
+      - "dylan-smith"
+    labels:
+      - "dependencies"
+
   # npm dependencies for the frontend
   - package-ecosystem: "npm"
     directory: "/frontend"
