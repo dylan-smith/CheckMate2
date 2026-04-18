@@ -21,7 +21,8 @@ function App() {
   const [submitting, setSubmitting] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
 
-  const formTitle = useMemo(() => (editingId ? 'Edit checklist' : 'Create checklist'), [editingId])
+  const isEditing = useMemo(() => editingId !== null, [editingId])
+  const formTitle = useMemo(() => (isEditing ? 'Edit checklist' : 'Create checklist'), [isEditing])
 
   useEffect(() => {
     void loadChecklists()
@@ -60,9 +61,9 @@ function App() {
 
     try {
       const response = await fetch(
-        editingId ? `${apiBaseUrl}/api/checklists/${editingId}` : `${apiBaseUrl}/api/checklists`,
+        isEditing ? `${apiBaseUrl}/api/checklists/${editingId}` : `${apiBaseUrl}/api/checklists`,
         {
-          method: editingId ? 'PUT' : 'POST',
+          method: isEditing ? 'PUT' : 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
@@ -145,9 +146,9 @@ function App() {
 
           <div className="actions">
             <button type="submit" disabled={submitting}>
-              {submitting ? 'Saving…' : editingId ? 'Save changes' : 'Create checklist'}
+              {submitting ? 'Saving…' : isEditing ? 'Save changes' : 'Create checklist'}
             </button>
-            {editingId && (
+            {isEditing && (
               <button type="button" className="secondary" onClick={cancelEdit}>
                 Cancel
               </button>
