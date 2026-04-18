@@ -26,3 +26,20 @@ npm run dev
 ```
 
 Set `VITE_API_BASE_URL` if your backend URL is different.
+
+## Run Playwright E2E tests
+
+The Playwright tests automatically start the backend and frontend servers, so no manual setup is required.
+
+```bash
+cd frontend
+npm install
+npx playwright install chromium --with-deps
+VITE_API_BASE_URL=http://localhost:5269 npm run build
+npx playwright test
+```
+
+To run tests with the interactive UI:
+```bash
+npx playwright test --ui
+```
