@@ -1,5 +1,7 @@
 # CheckMate2
 
+[![CI](https://github.com/dylan-smith/CheckMate2/actions/workflows/ci.yml/badge.svg)](https://github.com/dylan-smith/CheckMate2/actions/workflows/ci.yml)
+
 A checklist management app with:
 - **Backend:** ASP.NET Core Web API (.NET 10) + Entity Framework Core + SQL Server
 - **Frontend:** React 19 + TypeScript (Vite)
