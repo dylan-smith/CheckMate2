@@ -6,12 +6,15 @@ test.describe('Checklist management', () => {
     await expect(page.getByRole('heading', { name: 'CheckMate2' })).toBeVisible()
 
     // Clean up any existing checklists
-    const deleteButtons = page.getByRole('button', { name: 'Delete' })
-    while ((await deleteButtons.count()) > 0) {
-      await deleteButtons.first().click()
-      await expect(page.getByText('No checklists yet.')).toBeVisible({ timeout: 5000 }).catch(() => {})
-      // Short wait for the list to refresh
-      await page.waitForTimeout(300)
+    while ((await page.getByRole('button', { name: 'Delete' }).count()) > 0) {
+      const countBefore = await page.getByRole('button', { name: 'Delete' }).count()
+      await page.getByRole('button', { name: 'Delete' }).first().click()
+      // Wait until one fewer delete button remains (list has refreshed)
+      if (countBefore === 1) {
+        await expect(page.getByText('No checklists yet.')).toBeVisible()
+      } else {
+        await expect(page.getByRole('button', { name: 'Delete' })).toHaveCount(countBefore - 1)
+      }
     }
   })
 
