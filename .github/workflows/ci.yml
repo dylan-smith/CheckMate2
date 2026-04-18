@@ -24,14 +24,11 @@ jobs:
       - name: Restore dependencies
         run: dotnet restore
 
-      - name: Install dotnet-format
-        run: dotnet tool install --tool-path ./.dotnet-tools dotnet-format --version 9.0.0
-
       - name: Build
         run: dotnet build --no-restore
 
       - name: Verify formatting
-        run: ./.dotnet-tools/dotnet-format CheckMate2.slnx --verify-no-changes --no-restore --no-build --verbosity diagnostic
+        run: dotnet format CheckMate2.slnx --verify-no-changes --no-restore --verbosity diagnostic
 
       - name: Test
         run: dotnet test --no-build --verbosity normal
