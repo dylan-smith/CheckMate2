@@ -1,0 +1,165 @@
+using CheckMate2.Api.Contracts;
+using CheckMate2.Api.Controllers;
+using CheckMate2.Api.Data;
+using CheckMate2.Api.Models;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+
+namespace CheckMate2.Api.Tests;
+
+public class ChecklistsControllerTests
+{
+    [Fact]
+    public async Task Create_ReturnsConflict_WhenNameAlreadyExists()
+    {
+        await using var dbContext = CreateDbContext();
+        dbContext.Checklists.Add(new Checklist { Name = "Daily" });
+        await dbContext.SaveChangesAsync();
+
+        var controller = new ChecklistsController(dbContext);
+
+        var result = await controller.Create(new ChecklistRequest { Name = "daily" });
+
+        Assert.IsType<ConflictObjectResult>(result.Result);
+    }
+
+    [Fact]
+    public async Task Create_TrimsName_AndPersistsChecklist()
+    {
+        await using var dbContext = CreateDbContext();
+        var controller = new ChecklistsController(dbContext);
+
+        var result = await controller.Create(new ChecklistRequest { Name = "  Weekly  " });
+
+        var createdResult = Assert.IsType<CreatedAtActionResult>(result.Result);
+        var checklist = Assert.IsType<Checklist>(createdResult.Value);
+        Assert.Equal("Weekly", checklist.Name);
+
+        var savedChecklist = await dbContext.Checklists.SingleAsync();
+        Assert.Equal("Weekly", savedChecklist.Name);
+    }
+
+    [Fact]
+    public async Task Update_ReturnsConflict_WhenAnotherChecklistUsesName()
+    {
+        await using var dbContext = CreateDbContext();
+        dbContext.Checklists.AddRange(
+            new Checklist { Name = "Morning" },
+            new Checklist { Name = "Evening" });
+        await dbContext.SaveChangesAsync();
+
+        var morning = await dbContext.Checklists.SingleAsync(item => item.Name == "Morning");
+        var controller = new ChecklistsController(dbContext);
+
+        var result = await controller.Update(morning.Id, new ChecklistRequest { Name = "evening" });
+
+        Assert.IsType<ConflictObjectResult>(result.Result);
+    }
+
+    [Fact]
+    public async Task Update_ReturnsOk_AndUpdatesChecklist()
+    {
+        await using var dbContext = CreateDbContext();
+        var checklist = new Checklist { Name = "Morning" };
+        dbContext.Checklists.Add(checklist);
+        await dbContext.SaveChangesAsync();
+
+        var controller = new ChecklistsController(dbContext);
+
+        var result = await controller.Update(checklist.Id, new ChecklistRequest { Name = "  Workday  " });
+
+        var okResult = Assert.IsType<OkObjectResult>(result.Result);
+        var updatedChecklist = Assert.IsType<Checklist>(okResult.Value);
+        Assert.Equal("Workday", updatedChecklist.Name);
+
+        var savedChecklist = await dbContext.Checklists.SingleAsync(item => item.Id == checklist.Id);
+        Assert.Equal("Workday", savedChecklist.Name);
+    }
+
+    [Fact]
+    public async Task GetAll_ReturnsChecklistsOrderedByName()
+    {
+        await using var dbContext = CreateDbContext();
+        dbContext.Checklists.AddRange(
+            new Checklist { Name = "Zulu" },
+            new Checklist { Name = "Alpha" });
+        await dbContext.SaveChangesAsync();
+
+        var controller = new ChecklistsController(dbContext);
+
+        var result = await controller.GetAll();
+
+        var okResult = Assert.IsType<OkObjectResult>(result.Result);
+        var checklists = Assert.IsAssignableFrom<IEnumerable<Checklist>>(okResult.Value).ToList();
+
+        Assert.Equal(2, checklists.Count);
+        Assert.Collection(checklists,
+            checklist => Assert.Equal("Alpha", checklist.Name),
+            checklist => Assert.Equal("Zulu", checklist.Name));
+    }
+
+    [Fact]
+    public async Task GetById_ReturnsChecklist_WhenChecklistExists()
+    {
+        await using var dbContext = CreateDbContext();
+        var checklist = new Checklist { Name = "Daily" };
+        dbContext.Checklists.Add(checklist);
+        await dbContext.SaveChangesAsync();
+
+        var controller = new ChecklistsController(dbContext);
+
+        var result = await controller.GetById(checklist.Id);
+
+        var okResult = Assert.IsType<OkObjectResult>(result.Result);
+        var returnedChecklist = Assert.IsType<Checklist>(okResult.Value);
+        Assert.Equal(checklist.Id, returnedChecklist.Id);
+        Assert.Equal("Daily", returnedChecklist.Name);
+    }
+
+    [Fact]
+    public async Task GetById_ReturnsNotFound_WhenChecklistDoesNotExist()
+    {
+        await using var dbContext = CreateDbContext();
+        var controller = new ChecklistsController(dbContext);
+
+        var result = await controller.GetById(999);
+
+        Assert.IsType<NotFoundResult>(result.Result);
+    }
+
+    [Fact]
+    public async Task Delete_ReturnsNoContent_AndRemovesChecklist()
+    {
+        await using var dbContext = CreateDbContext();
+        var checklist = new Checklist { Name = "Daily" };
+        dbContext.Checklists.Add(checklist);
+        await dbContext.SaveChangesAsync();
+
+        var controller = new ChecklistsController(dbContext);
+
+        var result = await controller.Delete(checklist.Id);
+
+        Assert.IsType<NoContentResult>(result);
+        Assert.False(await dbContext.Checklists.AnyAsync(item => item.Id == checklist.Id));
+    }
+
+    [Fact]
+    public async Task Delete_ReturnsNotFound_WhenChecklistDoesNotExist()
+    {
+        await using var dbContext = CreateDbContext();
+        var controller = new ChecklistsController(dbContext);
+
+        var result = await controller.Delete(999);
+
+        Assert.IsType<NotFoundResult>(result);
+    }
+
+    private static ChecklistDbContext CreateDbContext()
+    {
+        var options = new DbContextOptionsBuilder<ChecklistDbContext>()
+            .UseInMemoryDatabase(Guid.NewGuid().ToString())
+            .Options;
+
+        return new ChecklistDbContext(options);
+    }
+}
