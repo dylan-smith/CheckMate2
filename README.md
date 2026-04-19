@@ -31,19 +31,24 @@ Set `VITE_API_BASE_URL` if your backend URL is different.
 
 ## Run Playwright E2E tests
 
-The Playwright tests automatically start the backend and frontend servers, so no manual setup is required.
+Playwright automatically starts the backend and frontend servers when tests run.
+Before running tests for the first time, install dependencies and the test browser:
 
 ```bash
 cd frontend
 npm install
 npx playwright install chromium --with-deps
-VITE_API_BASE_URL=http://localhost:5269 npm run build
-npx playwright test
+```
+
+Then run the tests (this builds the frontend and launches both servers automatically):
+
+```bash
+npm run test:e2e
 ```
 
 To run tests with the interactive UI:
 ```bash
-npx playwright test --ui
+npm run test:e2e:ui
 ```
 
 ## Contributing
