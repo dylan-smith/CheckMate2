@@ -1,5 +1,7 @@
 # CheckMate2
 
+[![CI](https://github.com/dylan-smith/CheckMate2/actions/workflows/ci.yml/badge.svg)](https://github.com/dylan-smith/CheckMate2/actions/workflows/ci.yml)
+
 A checklist management app with:
 - **Backend:** ASP.NET Core Web API + EF Core + SQL Server
 - **Frontend:** React + TypeScript (Vite)
@@ -21,7 +23,7 @@ API base URL (development): `http://localhost:5269`
 ## Run frontend
 ```bash
 cd frontend
-npm install
+npm ci
 npm run dev
 ```
 
@@ -53,3 +55,13 @@ The project includes a GitHub Actions workflow (`.github/workflows/deploy.yml`) 
 ### Environment Promotion
 
 The workflow supports environment promotion through GitHub Environments. Configure `production` and `staging` environments in your repository settings to enable approval gates and environment-specific secrets. Pushes to `main` deploy to the `production` environment; other triggers use `staging`.
+
+## Contributing
+
+Use the provided templates when opening issues or pull requests:
+
+- [Bug Report](https://github.com/dylan-smith/CheckMate2/issues/new?template=bug_report.md)
+- [Feature Request](https://github.com/dylan-smith/CheckMate2/issues/new?template=feature_request.md)
+- [Enhancement](https://github.com/dylan-smith/CheckMate2/issues/new?template=enhancement.md)
+
+Pull requests should follow the [PR template](./.github/PULL_REQUEST_TEMPLATE.md) checklist before requesting review.

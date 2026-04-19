@@ -28,12 +28,7 @@ public class ChecklistsController(ChecklistDbContext dbContext) : ControllerBase
             .AsNoTracking()
             .FirstOrDefaultAsync(item => item.Id == id);
 
-        if (checklist is null)
-        {
-            return NotFound();
-        }
-
-        return Ok(checklist);
+        return checklist is null ? (ActionResult<Checklist>)NotFound() : Ok(checklist);
     }
 
     [HttpPost]
@@ -133,13 +128,10 @@ public class ChecklistsController(ChecklistDbContext dbContext) : ControllerBase
             query = query.Where(item => item.Id != id);
         }
 
-        if (dbContext.Database.IsSqlServer())
-        {
-            return await query.AnyAsync(item => item.Name == name);
-        }
-
-        return await query.AnyAsync(item =>
-            string.Equals(item.Name, name, StringComparison.OrdinalIgnoreCase));
+        return dbContext.Database.IsSqlServer()
+            ? await query.AnyAsync(item => item.Name == name)
+            : await query.AnyAsync(item =>
+                string.Equals(item.Name, name, StringComparison.OrdinalIgnoreCase));
     }
 
     [HttpDelete("{id:int}")]
