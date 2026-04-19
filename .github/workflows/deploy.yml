@@ -45,12 +45,6 @@ jobs:
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-      - name: Deploy to Azure App Service
-        uses: azure/webapps-deploy@v3
-        with:
-          app-name: ${{ secrets.AZURE_BACKEND_APP_NAME }}
-          package: ./backend/publish
-
       - name: Set connection string
         uses: azure/appservice-settings@v1
         with:
@@ -59,6 +53,12 @@ jobs:
             [
               { "name": "ConnectionStrings__CheckMate2", "value": "${{ secrets.AZURE_SQL_CONNECTION_STRING }}", "slotSetting": false }
             ]
+
+      - name: Deploy to Azure App Service
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: ${{ secrets.AZURE_BACKEND_APP_NAME }}
+          package: ./backend/publish
 
   deploy-frontend:
     name: Deploy Frontend (React)
