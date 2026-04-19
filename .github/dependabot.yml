@@ -1,0 +1,51 @@
+# Dependabot configuration
+# https://docs.github.com/en/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
+
+version: 2
+updates:
+  # NuGet dependencies for the C# backend API
+  - package-ecosystem: "nuget"
+    directory: "/backend/CheckMate2.Api"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 10
+    reviewers:
+      - "dylan-smith"
+    labels:
+      - "dependencies"
+      - "backend"
+
+  # NuGet dependencies for the C# backend API tests
+  - package-ecosystem: "nuget"
+    directory: "/backend/CheckMate2.Api.Tests"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 10
+    reviewers:
+      - "dylan-smith"
+    labels:
+      - "dependencies"
+      - "backend"
+
+  # GitHub Actions dependencies
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 10
+    reviewers:
+      - "dylan-smith"
+    labels:
+      - "dependencies"
+
+  # npm dependencies for the frontend
+  - package-ecosystem: "npm"
+    directory: "/frontend"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 10
+    reviewers:
+      - "dylan-smith"
+    labels:
+      - "dependencies"
+      - "frontend"

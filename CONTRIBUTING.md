@@ -2,6 +2,18 @@
 
 Thank you for your interest in contributing to CheckMate2! This document provides guidelines and instructions for contributing.
 
+## Branch Protection
+
+The `main` branch should be protected with the following rules:
+
+> These rules must be configured in GitHub branch protection settings for the repository and may not be present in forks by default.
+
+- **Pull request reviews required** — At least one approving review is required before merging.
+- **No direct pushes** — All changes must go through a pull request.
+- **Status checks must pass** — The following CI checks should be required before merging:
+  - **Backend Build & Test** — Backend build and test validation
+  - **Frontend Build & Lint** — Frontend build and lint validation
+
 ## Getting Started
 
 1. Fork the repository and clone your fork locally.
@@ -79,7 +91,7 @@ npm run build
 
 ## Reporting Bugs
 
-Open a [GitHub Issue](https://github.com/CheckMate2/CheckMate2/issues) with:
+Open a [GitHub Issue](https://github.com/dylan-smith/CheckMate2/issues) with:
 
 - A clear description of the problem.
 - Steps to reproduce.
