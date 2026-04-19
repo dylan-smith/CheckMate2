@@ -19,7 +19,7 @@ export default defineConfig({
   ],
   webServer: [
     {
-      command: 'dotnet run --no-build --project ../backend/CheckMate2.Api',
+      command: 'dotnet run --project ../backend/CheckMate2.Api',
       url: 'http://localhost:5269/api/checklists',
       reuseExistingServer: !process.env.CI,
       timeout: 120000,
