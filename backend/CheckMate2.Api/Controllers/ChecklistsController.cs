@@ -8,15 +8,19 @@ namespace CheckMate2.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class ChecklistsController(ChecklistDbContext dbContext) : ControllerBase
+public class ChecklistsController(ChecklistDbContext dbContext, ILogger<ChecklistsController> logger) : ControllerBase
 {
     [HttpGet]
     public async Task<ActionResult<IEnumerable<Checklist>>> GetAll()
     {
+        logger.LogInformation("Retrieving all checklists");
+
         var checklists = await dbContext.Checklists
             .AsNoTracking()
             .OrderBy(checklist => checklist.Name)
             .ToListAsync();
+
+        logger.LogInformation("Retrieved {Count} checklists", checklists.Count);
 
         return Ok(checklists);
     }
@@ -24,9 +28,16 @@ public class ChecklistsController(ChecklistDbContext dbContext) : ControllerBase
     [HttpGet("{id:int}")]
     public async Task<ActionResult<Checklist>> GetById(int id)
     {
+        logger.LogInformation("Retrieving checklist {ChecklistId}", id);
+
         var checklist = await dbContext.Checklists
             .AsNoTracking()
             .FirstOrDefaultAsync(item => item.Id == id);
+
+        if (checklist is null)
+        {
+            logger.LogWarning("Checklist {ChecklistId} not found", id);
+        }
 
         return checklist is null ? (ActionResult<Checklist>)NotFound() : Ok(checklist);
     }
@@ -46,6 +57,7 @@ public class ChecklistsController(ChecklistDbContext dbContext) : ControllerBase
 
         if (duplicateName)
         {
+            logger.LogWarning("Checklist creation conflict for name {ChecklistName}", trimmedName);
             return Conflict(new { message = "A checklist with this name already exists." });
         }
 
@@ -65,11 +77,14 @@ public class ChecklistsController(ChecklistDbContext dbContext) : ControllerBase
 
             if (isDuplicateName)
             {
+                logger.LogWarning("Checklist creation conflict (concurrent) for name {ChecklistName}", trimmedName);
                 return Conflict(new { message = "A checklist with this name already exists." });
             }
 
             throw;
         }
+
+        logger.LogInformation("Created checklist {ChecklistId} with name {ChecklistName}", checklist.Id, checklist.Name);
 
         return CreatedAtAction(nameof(GetById), new { id = checklist.Id }, checklist);
     }
@@ -81,6 +96,7 @@ public class ChecklistsController(ChecklistDbContext dbContext) : ControllerBase
 
         if (checklist is null)
         {
+            logger.LogWarning("Checklist {ChecklistId} not found for update", id);
             return NotFound();
         }
 
@@ -96,6 +112,7 @@ public class ChecklistsController(ChecklistDbContext dbContext) : ControllerBase
 
         if (duplicateName)
         {
+            logger.LogWarning("Checklist update conflict for name {ChecklistName} on checklist {ChecklistId}", trimmedName, id);
             return Conflict(new { message = "A checklist with this name already exists." });
         }
 
@@ -111,11 +128,15 @@ public class ChecklistsController(ChecklistDbContext dbContext) : ControllerBase
 
             if (isDuplicateName)
             {
+                logger.LogWarning("Checklist update conflict (concurrent) for name {ChecklistName} on checklist {ChecklistId}", trimmedName, id);
                 return Conflict(new { message = "A checklist with this name already exists." });
             }
 
             throw;
         }
+
+        logger.LogInformation("Updated checklist {ChecklistId} to name {ChecklistName}", id, checklist.Name);
+
         return Ok(checklist);
     }
 
@@ -141,11 +162,14 @@ public class ChecklistsController(ChecklistDbContext dbContext) : ControllerBase
 
         if (checklist is null)
         {
+            logger.LogWarning("Checklist {ChecklistId} not found for deletion", id);
             return NotFound();
         }
 
         dbContext.Checklists.Remove(checklist);
         await dbContext.SaveChangesAsync();
+
+        logger.LogInformation("Deleted checklist {ChecklistId}", id);
 
         return NoContent();
     }

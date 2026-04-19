@@ -4,6 +4,7 @@ using CheckMate2.Api.Data;
 using CheckMate2.Api.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace CheckMate2.Api.Tests;
 
@@ -16,7 +17,7 @@ public class ChecklistsControllerTests
         dbContext.Checklists.Add(new Checklist { Name = "Daily" });
         await dbContext.SaveChangesAsync();
 
-        var controller = new ChecklistsController(dbContext);
+        var controller = new ChecklistsController(dbContext, NullLogger<ChecklistsController>.Instance);
 
         var result = await controller.Create(new ChecklistRequest { Name = "daily" });
 
@@ -27,7 +28,7 @@ public class ChecklistsControllerTests
     public async Task Create_TrimsName_AndPersistsChecklist()
     {
         await using var dbContext = CreateDbContext();
-        var controller = new ChecklistsController(dbContext);
+        var controller = new ChecklistsController(dbContext, NullLogger<ChecklistsController>.Instance);
 
         var result = await controller.Create(new ChecklistRequest { Name = "  Weekly  " });
 
@@ -49,7 +50,7 @@ public class ChecklistsControllerTests
         await dbContext.SaveChangesAsync();
 
         var morning = await dbContext.Checklists.SingleAsync(item => item.Name == "Morning");
-        var controller = new ChecklistsController(dbContext);
+        var controller = new ChecklistsController(dbContext, NullLogger<ChecklistsController>.Instance);
 
         var result = await controller.Update(morning.Id, new ChecklistRequest { Name = "evening" });
 
@@ -64,7 +65,7 @@ public class ChecklistsControllerTests
         dbContext.Checklists.Add(checklist);
         await dbContext.SaveChangesAsync();
 
-        var controller = new ChecklistsController(dbContext);
+        var controller = new ChecklistsController(dbContext, NullLogger<ChecklistsController>.Instance);
 
         var result = await controller.Update(checklist.Id, new ChecklistRequest { Name = "  Workday  " });
 
@@ -85,7 +86,7 @@ public class ChecklistsControllerTests
             new Checklist { Name = "Alpha" });
         await dbContext.SaveChangesAsync();
 
-        var controller = new ChecklistsController(dbContext);
+        var controller = new ChecklistsController(dbContext, NullLogger<ChecklistsController>.Instance);
 
         var result = await controller.GetAll();
 
@@ -106,7 +107,7 @@ public class ChecklistsControllerTests
         dbContext.Checklists.Add(checklist);
         await dbContext.SaveChangesAsync();
 
-        var controller = new ChecklistsController(dbContext);
+        var controller = new ChecklistsController(dbContext, NullLogger<ChecklistsController>.Instance);
 
         var result = await controller.GetById(checklist.Id);
 
@@ -120,7 +121,7 @@ public class ChecklistsControllerTests
     public async Task GetById_ReturnsNotFound_WhenChecklistDoesNotExist()
     {
         await using var dbContext = CreateDbContext();
-        var controller = new ChecklistsController(dbContext);
+        var controller = new ChecklistsController(dbContext, NullLogger<ChecklistsController>.Instance);
 
         var result = await controller.GetById(999);
 
@@ -135,7 +136,7 @@ public class ChecklistsControllerTests
         dbContext.Checklists.Add(checklist);
         await dbContext.SaveChangesAsync();
 
-        var controller = new ChecklistsController(dbContext);
+        var controller = new ChecklistsController(dbContext, NullLogger<ChecklistsController>.Instance);
 
         var result = await controller.Delete(checklist.Id);
 
@@ -147,7 +148,7 @@ public class ChecklistsControllerTests
     public async Task Delete_ReturnsNotFound_WhenChecklistDoesNotExist()
     {
         await using var dbContext = CreateDbContext();
-        var controller = new ChecklistsController(dbContext);
+        var controller = new ChecklistsController(dbContext, NullLogger<ChecklistsController>.Instance);
 
         var result = await controller.Delete(999);
 
