@@ -1,4 +1,5 @@
 using CheckMate2.Api.Data;
+using CheckMate2.Database;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -40,10 +41,17 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 }
 
-using (var scope = app.Services.CreateScope())
+if (useInMemoryDatabase)
 {
+    using var scope = app.Services.CreateScope();
     var dbContext = scope.ServiceProvider.GetRequiredService<ChecklistDbContext>();
     dbContext.Database.EnsureCreated();
+}
+else
+{
+    var connectionString = builder.Configuration.GetConnectionString("CheckMate2")
+        ?? throw new InvalidOperationException("Connection string 'CheckMate2' not found.");
+    DbUpRunner.Run(connectionString);
 }
 
 app.UseCors();
