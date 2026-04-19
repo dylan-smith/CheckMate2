@@ -57,7 +57,7 @@ public class ChecklistsController(ChecklistDbContext dbContext, ILogger<Checklis
 
         if (duplicateName)
         {
-            logger.LogWarning("Checklist creation conflict for name {ChecklistName}", trimmedName);
+            logger.LogWarning("Checklist creation failed due to duplicate name");
             return Conflict(new { message = "A checklist with this name already exists." });
         }
 
@@ -77,14 +77,14 @@ public class ChecklistsController(ChecklistDbContext dbContext, ILogger<Checklis
 
             if (isDuplicateName)
             {
-                logger.LogWarning("Checklist creation conflict (concurrent) for name {ChecklistName}", trimmedName);
+                logger.LogWarning("Checklist creation failed due to concurrent duplicate name");
                 return Conflict(new { message = "A checklist with this name already exists." });
             }
 
             throw;
         }
 
-        logger.LogInformation("Created checklist {ChecklistId} with name {ChecklistName}", checklist.Id, checklist.Name);
+        logger.LogInformation("Created checklist {ChecklistId}", checklist.Id);
 
         return CreatedAtAction(nameof(GetById), new { id = checklist.Id }, checklist);
     }
@@ -112,7 +112,7 @@ public class ChecklistsController(ChecklistDbContext dbContext, ILogger<Checklis
 
         if (duplicateName)
         {
-            logger.LogWarning("Checklist update conflict for name {ChecklistName} on checklist {ChecklistId}", trimmedName, id);
+            logger.LogWarning("Checklist {ChecklistId} update failed due to duplicate name", id);
             return Conflict(new { message = "A checklist with this name already exists." });
         }
 
@@ -128,14 +128,14 @@ public class ChecklistsController(ChecklistDbContext dbContext, ILogger<Checklis
 
             if (isDuplicateName)
             {
-                logger.LogWarning("Checklist update conflict (concurrent) for name {ChecklistName} on checklist {ChecklistId}", trimmedName, id);
+                logger.LogWarning("Checklist {ChecklistId} update failed due to concurrent duplicate name", id);
                 return Conflict(new { message = "A checklist with this name already exists." });
             }
 
             throw;
         }
 
-        logger.LogInformation("Updated checklist {ChecklistId} to name {ChecklistName}", id, checklist.Name);
+        logger.LogInformation("Updated checklist {ChecklistId}", id);
 
         return Ok(checklist);
     }
