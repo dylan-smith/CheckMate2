@@ -101,7 +101,7 @@ Before running tests for the first time, install dependencies and the test brows
 
 ```bash
 cd frontend
-npm install
+npm ci
 npx playwright install chromium --with-deps
 ```
 
