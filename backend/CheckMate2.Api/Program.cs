@@ -4,12 +4,13 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 var useInMemoryDatabase = builder.Configuration.GetValue<bool>("UseInMemoryDatabase");
+var azureMonitorConnectionString = builder.Configuration["AzureMonitor:ConnectionString"];
 
-if (!string.IsNullOrEmpty(builder.Configuration["AzureMonitor:ConnectionString"]))
+if (!string.IsNullOrWhiteSpace(azureMonitorConnectionString))
 {
     builder.Services.AddOpenTelemetry().UseAzureMonitor(options =>
     {
-        options.ConnectionString = builder.Configuration["AzureMonitor:ConnectionString"];
+        options.ConnectionString = azureMonitorConnectionString;
     });
 }
 
