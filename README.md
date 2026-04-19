@@ -28,3 +28,13 @@ npm run dev
 ```
 
 Set `VITE_API_BASE_URL` if your backend URL is different.
+
+## Contributing
+
+Use the provided templates when opening issues or pull requests:
+
+- [Bug Report](https://github.com/dylan-smith/CheckMate2/issues/new?template=bug_report.md)
+- [Feature Request](https://github.com/dylan-smith/CheckMate2/issues/new?template=feature_request.md)
+- [Enhancement](https://github.com/dylan-smith/CheckMate2/issues/new?template=enhancement.md)
+
+Pull requests should follow the [PR template](./.github/PULL_REQUEST_TEMPLATE.md) checklist before requesting review.
