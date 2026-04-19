@@ -139,9 +139,9 @@ The project includes a GitHub Actions workflow (`.github/workflows/deploy.yml`) 
 | `AZURE_SQL_CONNECTION_STRING` | SQL Server connection string for the deployed database |
 | `AZURE_STATIC_WEB_APPS_API_TOKEN` | Deployment token for Azure Static Web Apps |
 
-### Environment Promotion
+### Environment
 
-The workflow supports environment promotion through GitHub Environments. Configure `production` and `staging` environments in your repository settings to enable approval gates and environment-specific secrets. Pushes to `main` deploy to the `production` environment; other triggers use `staging`.
+The workflow uses the `production` GitHub Environment for all deployments. Configure the `production` environment in your repository settings to enable approval gates and environment-specific secrets.
 
 ## Contributing
 
