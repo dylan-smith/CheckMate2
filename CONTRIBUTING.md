@@ -79,7 +79,7 @@ npm run build
 
 ## Reporting Bugs
 
-Open a [GitHub Issue](../../issues) with:
+Open a [GitHub Issue](https://github.com/CheckMate2/CheckMate2/issues) with:
 
 - A clear description of the problem.
 - Steps to reproduce.
