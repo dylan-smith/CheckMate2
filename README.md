@@ -94,6 +94,28 @@ CheckMate2/
 └── README.md
 ```
 
+## Run Playwright E2E tests
+
+Playwright automatically starts the backend and frontend servers when tests run.
+Before running tests for the first time, install dependencies and the test browser:
+
+```bash
+cd frontend
+npm ci
+npx playwright install chromium --with-deps
+```
+
+Then run the tests (this builds the frontend and launches both servers automatically):
+
+```bash
+npm run test:e2e
+```
+
+To run tests with the interactive UI:
+```bash
+npm run test:e2e:ui
+```
+
 ## Contributing
 
 Contributions are welcome! Please read [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines on how to get started.
