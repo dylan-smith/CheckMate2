@@ -118,7 +118,7 @@ npm run test:e2e:ui
 
 ## Azure Deployment
 
-The project includes a GitHub Actions workflow (`.github/workflows/deploy.yml`) that deploys the backend and frontend to Azure on every push to `main`.
+The CI workflow (`.github/workflows/ci.yml`) includes deployment jobs that run after all checks pass. Deployment only runs on pushes to `main` (not on pull requests).
 
 ### Deployment Architecture
 
