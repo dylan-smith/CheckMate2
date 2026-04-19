@@ -49,7 +49,7 @@ if (useInMemoryDatabase)
 }
 else
 {
-    var connectionString = builder.Configuration.GetConnectionString("CheckMate2")
+    var connectionString = app.Configuration.GetConnectionString("CheckMate2")
         ?? throw new InvalidOperationException("Connection string 'CheckMate2' not found.");
     DbUpRunner.Run(connectionString);
 }
