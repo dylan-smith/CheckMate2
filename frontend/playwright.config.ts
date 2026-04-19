@@ -22,7 +22,7 @@ export default defineConfig({
       command: 'dotnet run --project ../backend/CheckMate2.Api',
       url: 'http://localhost:5269/api/checklists',
       reuseExistingServer: !process.env.CI,
-      timeout: 30000,
+      timeout: 120_000,
       env: {
         ASPNETCORE_URLS: 'http://localhost:5269',
         ASPNETCORE_ENVIRONMENT: 'Development',
