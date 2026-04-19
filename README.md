@@ -23,7 +23,7 @@ API base URL (development): `http://localhost:5269`
 ## Run frontend
 ```bash
 cd frontend
-npm install
+npm ci
 npm run dev
 ```
 
@@ -45,3 +45,13 @@ To run tests with the interactive UI:
 ```bash
 npx playwright test --ui
 ```
+
+## Contributing
+
+Use the provided templates when opening issues or pull requests:
+
+- [Bug Report](https://github.com/dylan-smith/CheckMate2/issues/new?template=bug_report.md)
+- [Feature Request](https://github.com/dylan-smith/CheckMate2/issues/new?template=feature_request.md)
+- [Enhancement](https://github.com/dylan-smith/CheckMate2/issues/new?template=enhancement.md)
+
+Pull requests should follow the [PR template](./.github/PULL_REQUEST_TEMPLATE.md) checklist before requesting review.
