@@ -4,7 +4,7 @@
 
 A checklist management app with:
 - **Backend:** ASP.NET Core Web API + EF Core + SQL Server
-- **Frontend:** React + TypeScript (Vite)
+- **Frontend:** React + TypeScript (Vite + Material UI)
 
 ## Features
 - Create checklist
