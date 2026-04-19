@@ -53,7 +53,7 @@ jobs:
           category: "/language:csharp"
 
   frontend:
-    name: Frontend Build & Lint
+    name: Frontend Build, Lint & Test
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -87,6 +87,9 @@ jobs:
 
       - name: Lint
         run: npx eslint .
+
+      - name: Test
+        run: npm test
 
       - name: Perform CodeQL Analysis
         if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
