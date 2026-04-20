@@ -5,10 +5,14 @@ import App from '../App'
 
 const API_BASE = 'http://localhost:5269'
 
-function mockFetch(handler: (url: string, init?: RequestInit) => Promise<Response>) {
-  return vi.spyOn(globalThis, 'fetch').mockImplementation(
-    (input: string | URL | Request, init?: RequestInit) => handler(String(input), init),
-  )
+function mockFetch(
+  handler: (url: string, init?: RequestInit) => Promise<Response>,
+) {
+  return vi
+    .spyOn(globalThis, 'fetch')
+    .mockImplementation((input: string | URL | Request, init?: RequestInit) =>
+      handler(String(input), init),
+    )
 }
 
 function jsonResponse(body: unknown, status = 200): Response {
@@ -62,17 +66,23 @@ describe('App', () => {
       render(<App />)
 
       await waitFor(() => {
-        expect(screen.getByText('Unable to load checklists.')).toBeInTheDocument()
+        expect(
+          screen.getByText('Unable to load checklists.'),
+        ).toBeInTheDocument()
       })
     })
 
     it('shows error message when fetch throws', async () => {
-      mockFetch(async () => { throw new Error('Network error') })
+      mockFetch(async () => {
+        throw new Error('Network error')
+      })
 
       render(<App />)
 
       await waitFor(() => {
-        expect(screen.getByText('Unable to load checklists.')).toBeInTheDocument()
+        expect(
+          screen.getByText('Unable to load checklists.'),
+        ).toBeInTheDocument()
       })
     })
   })
@@ -83,8 +93,12 @@ describe('App', () => {
 
       render(<App />)
 
-      expect(screen.getByRole('heading', { level: 1, name: 'CheckMate2' })).toBeInTheDocument()
-      expect(screen.getByText('Create, edit, and delete your custom checklists.')).toBeInTheDocument()
+      expect(
+        screen.getByRole('heading', { level: 1, name: 'CheckMate2' }),
+      ).toBeInTheDocument()
+      expect(
+        screen.getByText('Create, edit, and delete your custom checklists.'),
+      ).toBeInTheDocument()
 
       await waitFor(() => {
         expect(screen.queryByText('Loading…')).not.toBeInTheDocument()
@@ -96,9 +110,13 @@ describe('App', () => {
 
       render(<App />)
 
-      expect(screen.getByRole('heading', { level: 2, name: 'Create checklist' })).toBeInTheDocument()
+      expect(
+        screen.getByRole('heading', { level: 2, name: 'Create checklist' }),
+      ).toBeInTheDocument()
       expect(screen.getByLabelText('Checklist name')).toBeInTheDocument()
-      expect(screen.getByRole('button', { name: 'Create checklist' })).toBeInTheDocument()
+      expect(
+        screen.getByRole('button', { name: 'Create checklist' }),
+      ).toBeInTheDocument()
 
       await waitFor(() => {
         expect(screen.queryByText('Loading…')).not.toBeInTheDocument()
@@ -149,7 +167,10 @@ describe('App', () => {
 
       mockFetch(async (_url, init) => {
         if (init?.method === 'POST') {
-          return jsonResponse({ message: 'A checklist with this name already exists.' }, 409)
+          return jsonResponse(
+            { message: 'A checklist with this name already exists.' },
+            409,
+          )
         }
         return jsonResponse([{ id: 1, name: 'Existing' }])
       })
@@ -164,7 +185,9 @@ describe('App', () => {
       await user.click(screen.getByRole('button', { name: 'Create checklist' }))
 
       await waitFor(() => {
-        expect(screen.getByText('A checklist with this name already exists.')).toBeInTheDocument()
+        expect(
+          screen.getByText('A checklist with this name already exists.'),
+        ).toBeInTheDocument()
       })
     })
 
@@ -188,7 +211,9 @@ describe('App', () => {
       await user.click(screen.getByRole('button', { name: 'Create checklist' }))
 
       await waitFor(() => {
-        expect(screen.getByText('Unable to save checklist.')).toBeInTheDocument()
+        expect(
+          screen.getByText('Unable to save checklist.'),
+        ).toBeInTheDocument()
       })
     })
 
@@ -217,7 +242,9 @@ describe('App', () => {
       await user.click(screen.getByRole('button', { name: 'Create checklist' }))
 
       await waitFor(() => {
-        expect(screen.getByText('Unable to save checklist.')).toBeInTheDocument()
+        expect(
+          screen.getByText('Unable to save checklist.'),
+        ).toBeInTheDocument()
       })
     })
 
@@ -265,9 +292,13 @@ describe('App', () => {
 
       await user.click(screen.getByRole('button', { name: 'Edit' }))
 
-      expect(screen.getByRole('heading', { level: 2, name: 'Edit checklist' })).toBeInTheDocument()
+      expect(
+        screen.getByRole('heading', { level: 2, name: 'Edit checklist' }),
+      ).toBeInTheDocument()
       expect(screen.getByLabelText('Checklist name')).toHaveValue('My list')
-      expect(screen.getByRole('button', { name: 'Save changes' })).toBeInTheDocument()
+      expect(
+        screen.getByRole('button', { name: 'Save changes' }),
+      ).toBeInTheDocument()
       expect(screen.getByRole('button', { name: 'Cancel' })).toBeInTheDocument()
     })
 
@@ -320,9 +351,13 @@ describe('App', () => {
 
       await user.click(screen.getByRole('button', { name: 'Cancel' }))
 
-      expect(screen.getByRole('heading', { level: 2, name: 'Create checklist' })).toBeInTheDocument()
+      expect(
+        screen.getByRole('heading', { level: 2, name: 'Create checklist' }),
+      ).toBeInTheDocument()
       expect(screen.getByLabelText('Checklist name')).toHaveValue('')
-      expect(screen.queryByRole('button', { name: 'Cancel' })).not.toBeInTheDocument()
+      expect(
+        screen.queryByRole('button', { name: 'Cancel' }),
+      ).not.toBeInTheDocument()
     })
 
     it('shows error for 409 conflict during edit', async () => {
@@ -330,7 +365,10 @@ describe('App', () => {
 
       mockFetch(async (_url, init) => {
         if (init?.method === 'PUT') {
-          return jsonResponse({ message: 'A checklist with this name already exists.' }, 409)
+          return jsonResponse(
+            { message: 'A checklist with this name already exists.' },
+            409,
+          )
         }
         return jsonResponse([{ id: 1, name: 'My list' }])
       })
@@ -347,7 +385,9 @@ describe('App', () => {
       await user.click(screen.getByRole('button', { name: 'Save changes' }))
 
       await waitFor(() => {
-        expect(screen.getByText('A checklist with this name already exists.')).toBeInTheDocument()
+        expect(
+          screen.getByText('A checklist with this name already exists.'),
+        ).toBeInTheDocument()
       })
     })
   })
@@ -413,7 +453,9 @@ describe('App', () => {
         expect(screen.getByText('No checklists yet.')).toBeInTheDocument()
       })
 
-      expect(screen.queryByText('Unable to delete checklist.')).not.toBeInTheDocument()
+      expect(
+        screen.queryByText('Unable to delete checklist.'),
+      ).not.toBeInTheDocument()
     })
 
     it('shows error when delete fails', async () => {
@@ -435,7 +477,9 @@ describe('App', () => {
       await user.click(screen.getByRole('button', { name: 'Delete' }))
 
       await waitFor(() => {
-        expect(screen.getByText('Unable to delete checklist.')).toBeInTheDocument()
+        expect(
+          screen.getByText('Unable to delete checklist.'),
+        ).toBeInTheDocument()
       })
     })
 
@@ -458,7 +502,9 @@ describe('App', () => {
       await user.click(screen.getByRole('button', { name: 'Delete' }))
 
       await waitFor(() => {
-        expect(screen.getByText('Unable to delete checklist.')).toBeInTheDocument()
+        expect(
+          screen.getByText('Unable to delete checklist.'),
+        ).toBeInTheDocument()
       })
     })
 
@@ -489,14 +535,18 @@ describe('App', () => {
       const editButtons = screen.getAllByRole('button', { name: 'Edit' })
       await user.click(editButtons[0])
 
-      expect(screen.getByRole('heading', { level: 2, name: 'Edit checklist' })).toBeInTheDocument()
+      expect(
+        screen.getByRole('heading', { level: 2, name: 'Edit checklist' }),
+      ).toBeInTheDocument()
       expect(screen.getByLabelText('Checklist name')).toHaveValue('Item A')
 
       const deleteButtons = screen.getAllByRole('button', { name: 'Delete' })
       await user.click(deleteButtons[0])
 
       await waitFor(() => {
-        expect(screen.getByRole('heading', { level: 2, name: 'Create checklist' })).toBeInTheDocument()
+        expect(
+          screen.getByRole('heading', { level: 2, name: 'Create checklist' }),
+        ).toBeInTheDocument()
       })
       expect(screen.getByLabelText('Checklist name')).toHaveValue('')
     })
@@ -521,7 +571,9 @@ describe('App', () => {
       await user.click(screen.getByRole('button', { name: 'Create checklist' }))
 
       await waitFor(() => {
-        expect(screen.getByText('Checklist name is required.')).toBeInTheDocument()
+        expect(
+          screen.getByText('Checklist name is required.'),
+        ).toBeInTheDocument()
       })
     })
 
@@ -551,13 +603,17 @@ describe('App', () => {
       await user.click(screen.getByRole('button', { name: 'Create checklist' }))
 
       await waitFor(() => {
-        expect(screen.getByText('Unable to save checklist.')).toBeInTheDocument()
+        expect(
+          screen.getByText('Unable to save checklist.'),
+        ).toBeInTheDocument()
       })
 
       // Start editing - should clear the error
       await user.click(screen.getByRole('button', { name: 'Edit' }))
 
-      expect(screen.queryByText('Unable to save checklist.')).not.toBeInTheDocument()
+      expect(
+        screen.queryByText('Unable to save checklist.'),
+      ).not.toBeInTheDocument()
     })
   })
 

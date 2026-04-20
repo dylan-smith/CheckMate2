@@ -2,5 +2,6 @@
   <Folder Name="/backend/">
     <Project Path="backend/CheckMate2.Api.Tests/CheckMate2.Api.Tests.csproj" />
     <Project Path="backend/CheckMate2.Api/CheckMate2.Api.csproj" />
+    <Project Path="backend/CheckMate2.Database/CheckMate2.Database.csproj" />
   </Folder>
 </Solution>
