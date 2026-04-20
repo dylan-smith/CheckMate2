@@ -1,8 +1,16 @@
+using Azure.Monitor.OpenTelemetry.AspNetCore;
 using CheckMate2.Api.Data;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 var useInMemoryDatabase = builder.Configuration.GetValue<bool>("UseInMemoryDatabase");
+var azureMonitorConnectionString = builder.Configuration["AzureMonitor:ConnectionString"];
+
+if (!string.IsNullOrWhiteSpace(azureMonitorConnectionString))
+{
+    builder.Services.AddOpenTelemetry().UseAzureMonitor(options =>
+        options.ConnectionString = azureMonitorConnectionString);
+}
 
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
