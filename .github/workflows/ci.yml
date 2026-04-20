@@ -167,6 +167,11 @@ jobs:
           tenant-id: ${{ vars.AZURE_TENANT_ID }}
           subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
 
+      - name: Run database migrations
+        run: dotnet run --project backend/CheckMate2.Database/CheckMate2.Database.csproj --configuration Release -- "$CONNECTION_STRING"
+        env:
+          CONNECTION_STRING: ${{ secrets.AZURE_SQL_CONNECTION_STRING }}
+
       - name: Set connection string
         uses: azure/appservice-settings@v1
         with:
