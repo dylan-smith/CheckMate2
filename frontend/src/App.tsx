@@ -33,7 +33,10 @@ function App() {
   const [errorMessage, setErrorMessage] = useState('')
 
   const isEditing = useMemo(() => editingId !== null, [editingId])
-  const formTitle = useMemo(() => (isEditing ? 'Edit checklist' : 'Create checklist'), [isEditing])
+  const formTitle = useMemo(
+    () => (isEditing ? 'Edit checklist' : 'Create checklist'),
+    [isEditing],
+  )
 
   useEffect(() => {
     void loadChecklists()
@@ -72,7 +75,9 @@ function App() {
 
     try {
       const response = await fetch(
-        isEditing ? `${apiBaseUrl}/api/checklists/${editingId}` : `${apiBaseUrl}/api/checklists`,
+        isEditing
+          ? `${apiBaseUrl}/api/checklists/${editingId}`
+          : `${apiBaseUrl}/api/checklists`,
         {
           method: isEditing ? 'PUT' : 'POST',
           headers: {
@@ -85,7 +90,9 @@ function App() {
       if (!response.ok) {
         if (response.status === 409) {
           const error = (await response.json()) as ErrorResponse
-          setErrorMessage(error.message ?? 'A checklist with this name already exists.')
+          setErrorMessage(
+            error.message ?? 'A checklist with this name already exists.',
+          )
           return
         }
 
@@ -150,7 +157,11 @@ function App() {
           <Typography variant="h5" component="h2" sx={{ mb: 2 }}>
             {formTitle}
           </Typography>
-          <Box component="form" onSubmit={handleSubmit} sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+          <Box
+            component="form"
+            onSubmit={handleSubmit}
+            sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}
+          >
             <TextField
               id="checklist-name"
               label="Checklist name"
@@ -162,7 +173,11 @@ function App() {
             />
             <Stack direction="row" spacing={1}>
               <Button type="submit" variant="contained" disabled={submitting}>
-                {submitting ? 'Saving…' : isEditing ? 'Save changes' : 'Create checklist'}
+                {submitting
+                  ? 'Saving…'
+                  : isEditing
+                    ? 'Save changes'
+                    : 'Create checklist'}
               </Button>
               {isEditing && (
                 <Button type="button" variant="outlined" onClick={cancelEdit}>
@@ -193,10 +208,19 @@ function App() {
                   divider
                   secondaryAction={
                     <Stack direction="row" spacing={1}>
-                      <Button type="button" variant="outlined" onClick={() => startEdit(checklist)}>
+                      <Button
+                        type="button"
+                        variant="outlined"
+                        onClick={() => startEdit(checklist)}
+                      >
                         Edit
                       </Button>
-                      <Button type="button" color="error" variant="contained" onClick={() => void deleteChecklist(checklist.id)}>
+                      <Button
+                        type="button"
+                        color="error"
+                        variant="contained"
+                        onClick={() => void deleteChecklist(checklist.id)}
+                      >
                         Delete
                       </Button>
                     </Stack>
