@@ -225,7 +225,7 @@ function App() {
                       </Button>
                     </Stack>
                   }
-                  sx={{ pr: 22 }}
+                  sx={{ pr: '22px' }}
                 >
                   <ListItemText primary={checklist.name} />
                 </ListItem>
