@@ -6,17 +6,25 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CheckMate2.Api.Controllers;
 
+/// <remarks>
+/// Log statements use structured logging with typed route parameters (e.g. int id) only.
+/// User-provided strings such as checklist names are intentionally excluded to prevent log-forging.
+/// </remarks>
 [ApiController]
 [Route("api/[controller]")]
-public class ChecklistsController(ChecklistDbContext dbContext) : ControllerBase
+public class ChecklistsController(ChecklistDbContext dbContext, ILogger<ChecklistsController> logger) : ControllerBase
 {
     [HttpGet]
     public async Task<ActionResult<IEnumerable<Checklist>>> GetAll()
     {
+        logger.LogInformation("Retrieving all checklists");
+
         var checklists = await dbContext.Checklists
             .AsNoTracking()
             .OrderBy(checklist => checklist.Name)
             .ToListAsync();
+
+        logger.LogInformation("Retrieved {Count} checklists", checklists.Count);
 
         return Ok(checklists);
     }
@@ -24,9 +32,16 @@ public class ChecklistsController(ChecklistDbContext dbContext) : ControllerBase
     [HttpGet("{id:int}")]
     public async Task<ActionResult<Checklist>> GetById(int id)
     {
+        logger.LogInformation("Retrieving checklist {ChecklistId}", id);
+
         var checklist = await dbContext.Checklists
             .AsNoTracking()
             .FirstOrDefaultAsync(item => item.Id == id);
+
+        if (checklist is null)
+        {
+            logger.LogWarning("Checklist {ChecklistId} not found", id);
+        }
 
         return checklist is null ? (ActionResult<Checklist>)NotFound() : Ok(checklist);
     }
@@ -46,6 +61,7 @@ public class ChecklistsController(ChecklistDbContext dbContext) : ControllerBase
 
         if (duplicateName)
         {
+            logger.LogWarning("Checklist creation failed due to duplicate name");
             return Conflict(new { message = "A checklist with this name already exists." });
         }
 
@@ -65,11 +81,14 @@ public class ChecklistsController(ChecklistDbContext dbContext) : ControllerBase
 
             if (isDuplicateName)
             {
+                logger.LogWarning("Checklist creation failed due to concurrent duplicate name");
                 return Conflict(new { message = "A checklist with this name already exists." });
             }
 
             throw;
         }
+
+        logger.LogInformation("Created checklist {ChecklistId}", checklist.Id);
 
         return CreatedAtAction(nameof(GetById), new { id = checklist.Id }, checklist);
     }
@@ -81,6 +100,7 @@ public class ChecklistsController(ChecklistDbContext dbContext) : ControllerBase
 
         if (checklist is null)
         {
+            logger.LogWarning("Checklist {ChecklistId} not found for update", id);
             return NotFound();
         }
 
@@ -96,6 +116,7 @@ public class ChecklistsController(ChecklistDbContext dbContext) : ControllerBase
 
         if (duplicateName)
         {
+            logger.LogWarning("Checklist {ChecklistId} update failed due to duplicate name", id);
             return Conflict(new { message = "A checklist with this name already exists." });
         }
 
@@ -111,11 +132,15 @@ public class ChecklistsController(ChecklistDbContext dbContext) : ControllerBase
 
             if (isDuplicateName)
             {
+                logger.LogWarning("Checklist {ChecklistId} update failed due to concurrent duplicate name", id);
                 return Conflict(new { message = "A checklist with this name already exists." });
             }
 
             throw;
         }
+
+        logger.LogInformation("Updated checklist {ChecklistId}", id);
+
         return Ok(checklist);
     }
 
@@ -141,11 +166,14 @@ public class ChecklistsController(ChecklistDbContext dbContext) : ControllerBase
 
         if (checklist is null)
         {
+            logger.LogWarning("Checklist {ChecklistId} not found for deletion", id);
             return NotFound();
         }
 
         dbContext.Checklists.Remove(checklist);
         await dbContext.SaveChangesAsync();
+
+        logger.LogInformation("Deleted checklist {ChecklistId}", id);
 
         return NoContent();
     }

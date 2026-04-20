@@ -22,7 +22,10 @@ function App() {
   const [errorMessage, setErrorMessage] = useState('')
 
   const isEditing = useMemo(() => editingId !== null, [editingId])
-  const formTitle = useMemo(() => (isEditing ? 'Edit checklist' : 'Create checklist'), [isEditing])
+  const formTitle = useMemo(
+    () => (isEditing ? 'Edit checklist' : 'Create checklist'),
+    [isEditing],
+  )
 
   useEffect(() => {
     void loadChecklists()
@@ -61,7 +64,9 @@ function App() {
 
     try {
       const response = await fetch(
-        isEditing ? `${apiBaseUrl}/api/checklists/${editingId}` : `${apiBaseUrl}/api/checklists`,
+        isEditing
+          ? `${apiBaseUrl}/api/checklists/${editingId}`
+          : `${apiBaseUrl}/api/checklists`,
         {
           method: isEditing ? 'PUT' : 'POST',
           headers: {
@@ -74,7 +79,9 @@ function App() {
       if (!response.ok) {
         if (response.status === 409) {
           const error = (await response.json()) as ErrorResponse
-          setErrorMessage(error.message ?? 'A checklist with this name already exists.')
+          setErrorMessage(
+            error.message ?? 'A checklist with this name already exists.',
+          )
           return
         }
 
@@ -128,7 +135,9 @@ function App() {
   return (
     <main className="app">
       <h1>CheckMate2</h1>
-      <p className="subtitle">Create, edit, and delete your custom checklists.</p>
+      <p className="subtitle">
+        Create, edit, and delete your custom checklists.
+      </p>
 
       <section className="panel">
         <h2>{formTitle}</h2>
@@ -146,7 +155,11 @@ function App() {
 
           <div className="actions">
             <button type="submit" disabled={submitting}>
-              {submitting ? 'Saving…' : isEditing ? 'Save changes' : 'Create checklist'}
+              {submitting
+                ? 'Saving…'
+                : isEditing
+                  ? 'Save changes'
+                  : 'Create checklist'}
             </button>
             {isEditing && (
               <button type="button" className="secondary" onClick={cancelEdit}>
@@ -171,10 +184,18 @@ function App() {
               <li key={checklist.id}>
                 <span className="checklist-name">{checklist.name}</span>
                 <div className="item-actions">
-                  <button type="button" className="secondary" onClick={() => startEdit(checklist)}>
+                  <button
+                    type="button"
+                    className="secondary"
+                    onClick={() => startEdit(checklist)}
+                  >
                     Edit
                   </button>
-                  <button type="button" className="danger" onClick={() => void deleteChecklist(checklist.id)}>
+                  <button
+                    type="button"
+                    className="danger"
+                    onClick={() => void deleteChecklist(checklist.id)}
+                  >
                     Delete
                   </button>
                 </div>

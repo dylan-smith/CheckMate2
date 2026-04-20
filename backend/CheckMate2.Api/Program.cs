@@ -1,8 +1,16 @@
+using Azure.Monitor.OpenTelemetry.AspNetCore;
 using CheckMate2.Api.Data;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 var useInMemoryDatabase = builder.Configuration.GetValue<bool>("UseInMemoryDatabase");
+var azureMonitorConnectionString = builder.Configuration["AzureMonitor:ConnectionString"];
+
+if (!string.IsNullOrWhiteSpace(azureMonitorConnectionString))
+{
+    builder.Services.AddOpenTelemetry().UseAzureMonitor(options =>
+        options.ConnectionString = azureMonitorConnectionString);
+}
 
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
@@ -29,8 +37,11 @@ if (useInMemoryDatabase)
 }
 else
 {
+    var connectionString = builder.Configuration.GetConnectionString("CheckMate2")
+        ?? throw new InvalidOperationException("Connection string 'CheckMate2' not found.");
+
     builder.Services.AddDbContext<ChecklistDbContext>(options =>
-        options.UseSqlServer(builder.Configuration.GetConnectionString("CheckMate2")));
+        options.UseSqlServer(connectionString));
 }
 
 var app = builder.Build();
@@ -40,10 +51,17 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 }
 
-using (var scope = app.Services.CreateScope())
+using var scope = app.Services.CreateScope();
+var dbContext = scope.ServiceProvider.GetRequiredService<ChecklistDbContext>();
+
+if (useInMemoryDatabase)
 {
-    var dbContext = scope.ServiceProvider.GetRequiredService<ChecklistDbContext>();
     dbContext.Database.EnsureCreated();
+}
+else if (!dbContext.Database.CanConnect())
+{
+    throw new InvalidOperationException(
+        "Cannot connect to the database. Ensure the database has been created and migrations have been applied.");
 }
 
 app.UseCors();
