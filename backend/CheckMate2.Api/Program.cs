@@ -29,8 +29,11 @@ if (useInMemoryDatabase)
 }
 else
 {
+    var connectionString = builder.Configuration.GetConnectionString("CheckMate2")
+        ?? throw new InvalidOperationException("Connection string 'CheckMate2' not found.");
+
     builder.Services.AddDbContext<ChecklistDbContext>(options =>
-        options.UseSqlServer(builder.Configuration.GetConnectionString("CheckMate2")));
+        options.UseSqlServer(connectionString));
 }
 
 var app = builder.Build();
@@ -40,10 +43,17 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 }
 
-using (var scope = app.Services.CreateScope())
+using var scope = app.Services.CreateScope();
+var dbContext = scope.ServiceProvider.GetRequiredService<ChecklistDbContext>();
+
+if (useInMemoryDatabase)
 {
-    var dbContext = scope.ServiceProvider.GetRequiredService<ChecklistDbContext>();
     dbContext.Database.EnsureCreated();
+}
+else if (!dbContext.Database.CanConnect())
+{
+    throw new InvalidOperationException(
+        "Cannot connect to the database. Ensure the database has been created and migrations have been applied.");
 }
 
 app.UseCors();

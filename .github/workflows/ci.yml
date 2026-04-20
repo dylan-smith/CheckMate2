@@ -152,13 +152,20 @@ jobs:
           dotnet-version: '10.0.x'
 
       - name: Restore dependencies
-        run: dotnet restore backend/CheckMate2.Api/CheckMate2.Api.csproj
+        run: |
+          dotnet restore backend/CheckMate2.Api/CheckMate2.Api.csproj
+          dotnet restore backend/CheckMate2.Database/CheckMate2.Database.csproj
 
       - name: Build
-        run: dotnet build backend/CheckMate2.Api/CheckMate2.Api.csproj --configuration Release --no-restore
+        run: |
+          dotnet build backend/CheckMate2.Api/CheckMate2.Api.csproj --configuration Release --no-restore
+          dotnet build backend/CheckMate2.Database/CheckMate2.Database.csproj --configuration Release --no-restore
 
-      - name: Publish
+      - name: Publish API
         run: dotnet publish backend/CheckMate2.Api/CheckMate2.Api.csproj --configuration Release --no-build --output ./backend/publish
+
+      - name: Publish Database CLI
+        run: dotnet publish backend/CheckMate2.Database/CheckMate2.Database.csproj --configuration Release --no-build --output ./backend/database-publish
 
       - name: Login to Azure
         uses: azure/login@v2
@@ -166,6 +173,11 @@ jobs:
           client-id: ${{ vars.AZURE_CLIENT_ID }}
           tenant-id: ${{ vars.AZURE_TENANT_ID }}
           subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Run database migrations
+        run: ./backend/database-publish/CheckMate2.Database "$CONNECTION_STRING"
+        env:
+          CONNECTION_STRING: ${{ secrets.AZURE_SQL_CONNECTION_STRING }}
 
       - name: Set connection string
         uses: azure/appservice-settings@v1
