@@ -9,9 +9,7 @@ var azureMonitorConnectionString = builder.Configuration["AzureMonitor:Connectio
 if (!string.IsNullOrWhiteSpace(azureMonitorConnectionString))
 {
     builder.Services.AddOpenTelemetry().UseAzureMonitor(options =>
-    {
-        options.ConnectionString = azureMonitorConnectionString;
-    });
+        options.ConnectionString = azureMonitorConnectionString);
 }
 
 builder.Services.AddControllers();

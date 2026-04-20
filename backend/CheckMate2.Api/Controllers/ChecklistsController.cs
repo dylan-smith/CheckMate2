@@ -6,6 +6,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CheckMate2.Api.Controllers;
 
+/// <remarks>
+/// Log statements use structured logging with typed route parameters (e.g. int id) only.
+/// User-provided strings such as checklist names are intentionally excluded to prevent log-forging.
+/// </remarks>
 [ApiController]
 [Route("api/[controller]")]
 public class ChecklistsController(ChecklistDbContext dbContext, ILogger<ChecklistsController> logger) : ControllerBase
