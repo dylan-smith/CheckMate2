@@ -8,5 +8,15 @@ if (args.Length == 0)
     return -1;
 }
 
-DbUpRunner.Run(args[0]);
-return 0;
+try
+{
+    DbUpRunner.Run(args[0]);
+    return 0;
+}
+catch (Exception ex)
+{
+    Console.ForegroundColor = ConsoleColor.Red;
+    Console.WriteLine(ex);
+    Console.ResetColor();
+    return -1;
+}

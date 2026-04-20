@@ -30,8 +30,11 @@ if (useInMemoryDatabase)
 }
 else
 {
+    var connectionString = builder.Configuration.GetConnectionString("CheckMate2")
+        ?? throw new InvalidOperationException("Connection string 'CheckMate2' not found.");
+
     builder.Services.AddDbContext<ChecklistDbContext>(options =>
-        options.UseSqlServer(builder.Configuration.GetConnectionString("CheckMate2")));
+        options.UseSqlServer(connectionString));
 }
 
 var app = builder.Build();
@@ -49,8 +52,7 @@ if (useInMemoryDatabase)
 }
 else
 {
-    var connectionString = app.Configuration.GetConnectionString("CheckMate2")
-        ?? throw new InvalidOperationException("Connection string 'CheckMate2' not found.");
+    var connectionString = builder.Configuration.GetConnectionString("CheckMate2")!;
     DbUpRunner.Run(connectionString);
 }
 
