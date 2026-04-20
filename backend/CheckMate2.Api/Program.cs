@@ -23,6 +23,8 @@ builder.Services.AddCors(options => options.AddDefaultPolicy(policy =>
             .AllowAnyMethod();
     }));
 
+string? connectionString = null;
+
 if (useInMemoryDatabase)
 {
     builder.Services.AddDbContext<ChecklistDbContext>(options =>
@@ -30,7 +32,7 @@ if (useInMemoryDatabase)
 }
 else
 {
-    var connectionString = builder.Configuration.GetConnectionString("CheckMate2")
+    connectionString = builder.Configuration.GetConnectionString("CheckMate2")
         ?? throw new InvalidOperationException("Connection string 'CheckMate2' not found.");
 
     builder.Services.AddDbContext<ChecklistDbContext>(options =>
@@ -52,8 +54,7 @@ if (useInMemoryDatabase)
 }
 else
 {
-    var connectionString = builder.Configuration.GetConnectionString("CheckMate2")!;
-    DbUpRunner.Run(connectionString);
+    DbUpRunner.Run(connectionString!);
 }
 
 app.UseCors();
