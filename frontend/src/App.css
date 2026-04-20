@@ -82,7 +82,7 @@ button.danger {
   gap: 0.75rem;
 }
 
-.checklist-name {
+.checklist-row-name {
   overflow-wrap: anywhere;
 }
 
