@@ -13,6 +13,9 @@ permissions:
   actions: read
   contents: read
   security-events: write
+  checks: write
+  pull-requests: write
+  issues: read
 
 jobs:
   backend:
@@ -44,7 +47,15 @@ jobs:
         run: dotnet format CheckMate2.slnx --verify-no-changes --no-restore
 
       - name: Test
-        run: dotnet test --no-build --verbosity normal
+        run: dotnet test --no-build --verbosity normal --logger "trx;LogFileName=test-results.trx" --results-directory TestResults
+
+      - name: Publish Backend Test Results
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        if: always() && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)
+        with:
+          check_name: Backend Test Results
+          comment_mode: always
+          files: "**/TestResults/*.trx"
 
       - name: Perform CodeQL Analysis
         if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
@@ -127,6 +138,13 @@ jobs:
         env:
           VITE_API_BASE_URL: http://localhost:5269
         run: npx playwright test
+      - name: Publish E2E Test Results
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        if: always() && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)
+        with:
+          check_name: E2E Test Results
+          comment_mode: always
+          files: "frontend/playwright-report/results.xml"
       - uses: actions/upload-artifact@v4
         if: ${{ failure() }}
         with:
