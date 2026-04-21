@@ -13,14 +13,18 @@ permissions:
   actions: read
   contents: read
   security-events: write
-  checks: write
-  pull-requests: write
-  issues: read
 
 jobs:
   backend:
     name: Backend Build & Test
     runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+      checks: write
+      pull-requests: write
+      issues: read
     steps:
       - uses: actions/checkout@v6
 
@@ -111,6 +115,11 @@ jobs:
   e2e-tests:
     runs-on: ubuntu-latest
     needs: [frontend, backend]
+    permissions:
+      contents: read
+      checks: write
+      pull-requests: write
+      issues: read
     defaults:
       run:
         working-directory: frontend
