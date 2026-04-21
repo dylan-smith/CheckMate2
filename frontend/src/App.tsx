@@ -182,7 +182,7 @@ function App() {
           <ul className="checklist-list">
             {checklists.map((checklist) => (
               <li key={checklist.id}>
-                <span>{checklist.name}</span>
+                <span className="checklist-row-name">{checklist.name}</span>
                 <div className="item-actions">
                   <button
                     type="button"
