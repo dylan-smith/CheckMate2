@@ -4,7 +4,7 @@
 
 A checklist management app with:
 - **Backend:** ASP.NET Core Web API (.NET 10) + Entity Framework Core + SQL Server
-- **Frontend:** React 19 + TypeScript (Vite)
+- **Frontend:** React 19 + TypeScript (Vite + Material UI)
 
 ## Features
 
