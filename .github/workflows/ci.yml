@@ -280,8 +280,8 @@ jobs:
         run: |
           az webapp config appsettings set \
             --name "${AZURE_BACKEND_APP_NAME}" \
-            --resource-group "${AZURE_BACKEND_RESOURCE_GROUP}" \
+            --resource-group "${AZURE_RESOURCE_GROUP}" \
             --settings "Cors__AllowedOrigins__0=${FRONTEND_ORIGIN}"
         env:
           AZURE_BACKEND_APP_NAME: ${{ vars.AZURE_BACKEND_APP_NAME }}
-          AZURE_BACKEND_RESOURCE_GROUP: ${{ vars.AZURE_BACKEND_RESOURCE_GROUP }}
+          AZURE_RESOURCE_GROUP: ${{ vars.AZURE_RESOURCE_GROUP }}

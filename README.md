@@ -136,6 +136,7 @@ The CI workflow (`.github/workflows/ci.yml`) includes deployment jobs that run a
 | `AZURE_SUBSCRIPTION_ID` | Azure subscription ID |
 | `AZURE_BACKEND_APP_NAME` | Name of the Azure App Service for the backend |
 | `AZURE_BACKEND_URL` | Public URL of the backend API (e.g. `https://checkmate2-api.azurewebsites.net`) |
+| `AZURE_RESOURCE_GROUP` | Azure resource group containing both the backend App Service and frontend Storage Account |
 | `AZURE_STORAGE_ACCOUNT_NAME` | Name of the Azure Storage Account used to host the frontend static website |
 
 ### Required GitHub Secrets
