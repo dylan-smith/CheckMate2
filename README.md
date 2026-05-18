@@ -125,7 +125,7 @@ The CI workflow (`.github/workflows/ci.yml`) includes deployment jobs that run a
 | Component | Azure Service | Endpoint |
 |-----------|--------------|----------|
 | Backend API | Azure App Service | `https://<AZURE_BACKEND_APP_NAME>.azurewebsites.net` |
-| Frontend | Azure Storage Account (static website) | `https://<AZURE_STORAGE_ACCOUNT_NAME>.z13.web.core.windows.net` |
+| Frontend | Azure Storage Account (static website) | `https://checkmate2.z22.web.core.windows.net` |
 
 ### Required GitHub Variables
 
