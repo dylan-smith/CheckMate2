@@ -262,3 +262,26 @@ jobs:
         working-directory: frontend
         env:
           AZURE_STORAGE_ACCOUNT_NAME: ${{ vars.AZURE_STORAGE_ACCOUNT_NAME }}
+
+      - name: Resolve frontend origin
+        shell: bash
+        run: |
+          FRONTEND_ORIGIN="$(az storage account show \
+            --name "${AZURE_STORAGE_ACCOUNT_NAME}" \
+            --query 'primaryEndpoints.web' \
+            --output tsv)"
+          FRONTEND_ORIGIN="${FRONTEND_ORIGIN%/}"
+          echo "FRONTEND_ORIGIN=${FRONTEND_ORIGIN}" >> "$GITHUB_ENV"
+        env:
+          AZURE_STORAGE_ACCOUNT_NAME: ${{ vars.AZURE_STORAGE_ACCOUNT_NAME }}
+
+      - name: Update backend CORS allowed origins
+        shell: bash
+        run: |
+          az webapp config appsettings set \
+            --name "${AZURE_BACKEND_APP_NAME}" \
+            --resource-group "${AZURE_BACKEND_RESOURCE_GROUP}" \
+            --settings "Cors__AllowedOrigins__0=${FRONTEND_ORIGIN}"
+        env:
+          AZURE_BACKEND_APP_NAME: ${{ vars.AZURE_BACKEND_APP_NAME }}
+          AZURE_BACKEND_RESOURCE_GROUP: ${{ vars.AZURE_BACKEND_RESOURCE_GROUP }}
