@@ -258,7 +258,7 @@ jobs:
           subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
 
       - name: Deploy to Azure Storage Account
-        run: az storage blob upload-batch --account-name "$AZURE_STORAGE_ACCOUNT_NAME" --auth-mode login --source ./dist --destination '$web' --overwrite
+        run: npm run deploy
         working-directory: frontend
         env:
           AZURE_STORAGE_ACCOUNT_NAME: ${{ vars.AZURE_STORAGE_ACCOUNT_NAME }}

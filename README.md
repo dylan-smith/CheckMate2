@@ -18,7 +18,6 @@ A checklist management app with:
 - [Node.js](https://nodejs.org/) (LTS recommended)
 - [npm](https://www.npmjs.com/)
 - SQL Server (optional — an in-memory database is used by default in development)
-- [Azure CLI](https://learn.microsoft.com/en-us/cli/azure/install-azure-cli) (required only for production deployments)
 
 ## Local Development Setup
 
