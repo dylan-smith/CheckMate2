@@ -11,7 +11,7 @@
     "preview": "vite preview",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
-    "deploy": "az storage blob upload-batch --account-name $AZURE_STORAGE_ACCOUNT_NAME --auth-mode login --source ./dist --destination '$web' --overwrite"
+    "deploy": "az storage blob delete-batch --account-name $AZURE_STORAGE_ACCOUNT_NAME --auth-mode login --source '$web' && az storage blob upload-batch --account-name $AZURE_STORAGE_ACCOUNT_NAME --auth-mode login --source ./dist --destination '$web' --overwrite"
   },
   "dependencies": {
     "react": "^19.2.4",
