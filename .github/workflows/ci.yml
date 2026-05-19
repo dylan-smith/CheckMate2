@@ -207,13 +207,16 @@ jobs:
           CONNECTION_STRING: ${{ secrets.AZURE_SQL_CONNECTION_STRING }}
 
       - name: Set connection string
-        uses: azure/appservice-settings@v1
-        with:
-          app-name: ${{ vars.AZURE_BACKEND_APP_NAME }}
-          app-settings-json: |
-            [
-              { "name": "ConnectionStrings__CheckMate2", "value": "${{ secrets.AZURE_SQL_CONNECTION_STRING }}", "slotSetting": false }
-            ]
+        shell: bash
+        run: |
+          az webapp config appsettings set \
+            --name "${AZURE_BACKEND_APP_NAME}" \
+            --resource-group "${AZURE_RESOURCE_GROUP}" \
+            --settings "ConnectionStrings__CheckMate2=${AZURE_SQL_CONNECTION_STRING}"
+        env:
+          AZURE_BACKEND_APP_NAME: ${{ vars.AZURE_BACKEND_APP_NAME }}
+          AZURE_RESOURCE_GROUP: ${{ vars.AZURE_RESOURCE_GROUP }}
+          AZURE_SQL_CONNECTION_STRING: ${{ secrets.AZURE_SQL_CONNECTION_STRING }}
 
       - name: Deploy to Azure App Service
         uses: azure/webapps-deploy@v3
