@@ -4,7 +4,10 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 var useInMemoryDatabase = builder.Configuration.GetValue<bool>("UseInMemoryDatabase");
-var azureMonitorConnectionString = builder.Configuration["AzureMonitor:ConnectionString"];
+var azureMonitorConnectionString = builder.Configuration["AzureMonitor:ConnectionString"]
+    is string cs && !string.IsNullOrWhiteSpace(cs)
+    ? cs
+    : builder.Configuration["APPLICATIONINSIGHTS_CONNECTION_STRING"];
 
 if (!string.IsNullOrWhiteSpace(azureMonitorConnectionString))
 {
