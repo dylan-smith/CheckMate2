@@ -78,7 +78,7 @@ npm run preview
 
 1. **Backend** — Publish the API with `dotnet publish -c Release` from `backend/CheckMate2.Api`. Deploy the output to any host that supports .NET 10 (Azure App Service, Docker, etc.). Configure the `ConnectionStrings:CheckMate2` setting to point to your production SQL Server instance and set `UseInMemoryDatabase` to `false`. If the frontend will be served from a different origin than the API, also configure `Cors:AllowedOrigins` to include the production frontend URL(s) so the browser can call the API.
 
-2. **Frontend** — Run `npm run build` in `frontend` and serve the contents of `frontend/dist` with any static file host (Azure Static Web Apps, Nginx, etc.). Set `VITE_API_BASE_URL` to the production API URL before building. When using a different origin for the frontend, make sure the backend `Cors:AllowedOrigins` setting includes that frontend URL.
+2. **Frontend** — Run `npm run build` in `frontend` and serve the contents of `frontend/dist` with any static file host (Azure Storage Account static website, Nginx, etc.). Set `VITE_API_BASE_URL` to the production API URL before building. When using a different origin for the frontend, make sure the backend `Cors:AllowedOrigins` setting includes that frontend URL.
 
 ## Project Structure
 
@@ -125,7 +125,7 @@ The CI workflow (`.github/workflows/ci.yml`) includes deployment jobs that run a
 | Component | Azure Service | Endpoint |
 |-----------|--------------|----------|
 | Backend API | Azure App Service | `https://<AZURE_BACKEND_APP_NAME>.azurewebsites.net` |
-| Frontend | Azure Static Web Apps | `https://<your-static-web-app>.azurestaticapps.net` |
+| Frontend | Azure Storage Account (static website) | `https://checkmate2.z22.web.core.windows.net` |
 
 ### Required GitHub Variables
 
@@ -136,13 +136,14 @@ The CI workflow (`.github/workflows/ci.yml`) includes deployment jobs that run a
 | `AZURE_SUBSCRIPTION_ID` | Azure subscription ID |
 | `AZURE_BACKEND_APP_NAME` | Name of the Azure App Service for the backend |
 | `AZURE_BACKEND_URL` | Public URL of the backend API (e.g. `https://checkmate2-api.azurewebsites.net`) |
+| `AZURE_RESOURCE_GROUP` | Azure resource group containing both the backend App Service and frontend Storage Account |
+| `AZURE_STORAGE_ACCOUNT_NAME` | Name of the Azure Storage Account used to host the frontend static website |
 
 ### Required GitHub Secrets
 
 | Secret | Description |
 |--------|-------------|
 | `AZURE_SQL_CONNECTION_STRING` | SQL Server connection string for the deployed database |
-| `AZURE_STATIC_WEB_APPS_API_TOKEN` | Deployment token for Azure Static Web Apps |
 
 ### Environment
 
