@@ -5,6 +5,10 @@ import App from '../App'
 
 const API_BASE = 'http://localhost:5269'
 
+beforeEach(() => {
+  import.meta.env.VITE_API_BASE_URL = API_BASE
+})
+
 function mockFetch(
   handler: (url: string, init?: RequestInit) => Promise<Response>,
 ) {
@@ -22,12 +26,9 @@ function jsonResponse(body: unknown, status = 200): Response {
   })
 }
 
-beforeEach(() => {
-  vi.restoreAllMocks()
-})
-
 afterEach(() => {
   vi.restoreAllMocks()
+  delete import.meta.env.VITE_API_BASE_URL
 })
 
 describe('App', () => {
