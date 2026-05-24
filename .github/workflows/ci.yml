@@ -345,5 +345,7 @@ jobs:
         if: ${{ failure() }}
         with:
           name: smoke-test-report
-          path: frontend/playwright-report/
+          path: |
+            frontend/playwright-report/smoke/
+            frontend/playwright-report/smoke-results.xml
           retention-days: 30
