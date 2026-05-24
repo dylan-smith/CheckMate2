@@ -14,6 +14,15 @@ const theme = createTheme({
     secondary: {
       main: '#9c27b0',
     },
+    background: {
+      default: '#f3f4f6',
+    },
+    text: {
+      primary: '#111827',
+    },
+  },
+  typography: {
+    fontFamily: 'Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif',
   },
 })
 
