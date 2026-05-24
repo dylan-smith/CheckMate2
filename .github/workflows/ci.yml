@@ -233,7 +233,7 @@ jobs:
     if: github.ref == 'refs/heads/main'
     environment: production
     outputs:
-      frontend-origin: ${{ steps.resolve-frontend-origin.outputs.frontend-origin }}
+      frontend-origin: ${{ steps['resolve-frontend-origin'].outputs['frontend-origin'] }}
     permissions:
       id-token: write
       contents: read
