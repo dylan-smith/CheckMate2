@@ -18,6 +18,13 @@ jobs:
   backend:
     name: Backend Build & Test
     runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+      checks: write
+      pull-requests: write
+      issues: read
     steps:
       - uses: actions/checkout@v6
 
@@ -28,7 +35,7 @@ jobs:
 
       - name: Initialize CodeQL
         if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
-        uses: github/codeql-action/init@v3
+        uses: github/codeql-action/init@v4
         with:
           languages: csharp
           build-mode: manual
@@ -44,11 +51,19 @@ jobs:
         run: dotnet format CheckMate2.slnx --verify-no-changes --no-restore
 
       - name: Test
-        run: dotnet test --no-build --verbosity normal
+        run: dotnet test --no-build --verbosity normal --logger "trx;LogFileName=test-results.trx" --results-directory TestResults
+
+      - name: Publish Backend Test Results
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        if: always() && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)
+        with:
+          check_name: Backend Test Results
+          comment_mode: always
+          files: "**/TestResults/*.trx"
 
       - name: Perform CodeQL Analysis
         if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
-        uses: github/codeql-action/analyze@v3
+        uses: github/codeql-action/analyze@v4
         with:
           category: "/language:csharp"
 
@@ -70,7 +85,7 @@ jobs:
 
       - name: Initialize CodeQL
         if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
-        uses: github/codeql-action/init@v3
+        uses: github/codeql-action/init@v4
         with:
           languages: javascript-typescript
           build-mode: none
@@ -93,13 +108,18 @@ jobs:
 
       - name: Perform CodeQL Analysis
         if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
-        uses: github/codeql-action/analyze@v3
+        uses: github/codeql-action/analyze@v4
         with:
           category: "/language:javascript-typescript"
 
   e2e-tests:
     runs-on: ubuntu-latest
     needs: [frontend, backend]
+    permissions:
+      contents: read
+      checks: write
+      pull-requests: write
+      issues: read
     defaults:
       run:
         working-directory: frontend
@@ -127,7 +147,14 @@ jobs:
         env:
           VITE_API_BASE_URL: http://localhost:5269
         run: npx playwright test
-      - uses: actions/upload-artifact@v4
+      - name: Publish E2E Test Results
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        if: always() && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)
+        with:
+          check_name: E2E Test Results
+          comment_mode: always
+          files: "frontend/playwright-report/results.xml"
+      - uses: actions/upload-artifact@v7
         if: ${{ failure() }}
         with:
           name: playwright-report
@@ -168,7 +195,7 @@ jobs:
         run: dotnet publish backend/CheckMate2.Database/CheckMate2.Database.csproj --configuration Release --no-build --output ./backend/database-publish
 
       - name: Login to Azure
-        uses: azure/login@v2
+        uses: azure/login@v3
         with:
           client-id: ${{ vars.AZURE_CLIENT_ID }}
           tenant-id: ${{ vars.AZURE_TENANT_ID }}
@@ -180,13 +207,18 @@ jobs:
           CONNECTION_STRING: ${{ secrets.AZURE_SQL_CONNECTION_STRING }}
 
       - name: Set connection string
-        uses: azure/appservice-settings@v1
-        with:
-          app-name: ${{ vars.AZURE_BACKEND_APP_NAME }}
-          app-settings-json: |
-            [
-              { "name": "ConnectionStrings__CheckMate2", "value": "${{ secrets.AZURE_SQL_CONNECTION_STRING }}", "slotSetting": false }
-            ]
+        shell: bash
+        run: |
+          az webapp config appsettings set \
+            --name "${AZURE_BACKEND_APP_NAME}" \
+            --resource-group "${AZURE_RESOURCE_GROUP}" \
+            --settings "ConnectionStrings__CheckMate2=${AZURE_SQL_CONNECTION_STRING}" \
+            --only-show-errors \
+            --output none
+        env:
+          AZURE_BACKEND_APP_NAME: ${{ vars.AZURE_BACKEND_APP_NAME }}
+          AZURE_RESOURCE_GROUP: ${{ vars.AZURE_RESOURCE_GROUP }}
+          AZURE_SQL_CONNECTION_STRING: ${{ secrets.AZURE_SQL_CONNECTION_STRING }}
 
       - name: Deploy to Azure App Service
         uses: azure/webapps-deploy@v3
@@ -201,6 +233,7 @@ jobs:
     if: github.ref == 'refs/heads/main'
     environment: production
     permissions:
+      id-token: write
       contents: read
     steps:
       - uses: actions/checkout@v6
@@ -222,8 +255,38 @@ jobs:
         env:
           VITE_API_BASE_URL: ${{ vars.AZURE_BACKEND_URL }}
 
-      - name: Deploy to Azure Static Web Apps
-        run: npm run deploy -- --env production --deployment-token "$AZURE_STATIC_WEB_APPS_API_TOKEN"
+      - name: Login to Azure
+        uses: azure/login@v3
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Deploy to Azure Storage Account
+        run: npm run deploy
         working-directory: frontend
         env:
-          AZURE_STATIC_WEB_APPS_API_TOKEN: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
+          AZURE_STORAGE_ACCOUNT_NAME: ${{ vars.AZURE_STORAGE_ACCOUNT_NAME }}
+
+      - name: Resolve frontend origin
+        shell: bash
+        run: |
+          FRONTEND_ORIGIN="$(az storage account show \
+            --name "${AZURE_STORAGE_ACCOUNT_NAME}" \
+            --query 'primaryEndpoints.web' \
+            --output tsv)"
+          FRONTEND_ORIGIN="${FRONTEND_ORIGIN%/}"
+          echo "FRONTEND_ORIGIN=${FRONTEND_ORIGIN}" >> "$GITHUB_ENV"
+        env:
+          AZURE_STORAGE_ACCOUNT_NAME: ${{ vars.AZURE_STORAGE_ACCOUNT_NAME }}
+
+      - name: Update backend CORS allowed origins
+        shell: bash
+        run: |
+          az webapp config appsettings set \
+            --name "${AZURE_BACKEND_APP_NAME}" \
+            --resource-group "${AZURE_RESOURCE_GROUP}" \
+            --settings "Cors__AllowedOrigins__0=${FRONTEND_ORIGIN}"
+        env:
+          AZURE_BACKEND_APP_NAME: ${{ vars.AZURE_BACKEND_APP_NAME }}
+          AZURE_RESOURCE_GROUP: ${{ vars.AZURE_RESOURCE_GROUP }}

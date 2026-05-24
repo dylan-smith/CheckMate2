@@ -26,3 +26,4 @@
 ## PR expectations
 - Keep PRs small and focused.
 - Ensure backend and frontend checks pass for affected areas.
+- Whenever UI changes are involved, always take screenshots and attach them to the PR description showing the changes.
