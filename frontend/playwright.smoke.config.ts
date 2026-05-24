@@ -10,7 +10,7 @@ export default defineConfig({
   reporter: process.env.CI
     ? [
         ['github'],
-        ['html'],
+        ['html', { outputFolder: 'playwright-report/smoke' }],
         ['junit', { outputFile: 'playwright-report/smoke-results.xml' }],
       ]
     : 'list',
