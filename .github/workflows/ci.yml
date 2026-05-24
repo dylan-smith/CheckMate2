@@ -232,6 +232,8 @@ jobs:
     needs: deploy-backend
     if: github.ref == 'refs/heads/main'
     environment: production
+    outputs:
+      frontend-origin: ${{ steps.resolve-frontend-origin.outputs.frontend-origin }}
     permissions:
       id-token: write
       contents: read
@@ -269,6 +271,7 @@ jobs:
           AZURE_STORAGE_ACCOUNT_NAME: ${{ vars.AZURE_STORAGE_ACCOUNT_NAME }}
 
       - name: Resolve frontend origin
+        id: resolve-frontend-origin
         shell: bash
         run: |
           FRONTEND_ORIGIN="$(az storage account show \
@@ -277,6 +280,7 @@ jobs:
             --output tsv)"
           FRONTEND_ORIGIN="${FRONTEND_ORIGIN%/}"
           echo "FRONTEND_ORIGIN=${FRONTEND_ORIGIN}" >> "$GITHUB_ENV"
+          echo "frontend-origin=${FRONTEND_ORIGIN}" >> "$GITHUB_OUTPUT"
         env:
           AZURE_STORAGE_ACCOUNT_NAME: ${{ vars.AZURE_STORAGE_ACCOUNT_NAME }}
 
@@ -319,26 +323,9 @@ jobs:
       - name: Install Playwright browser
         run: npx playwright install chromium --with-deps
 
-      - name: Login to Azure
-        uses: azure/login@v3
-        with:
-          client-id: ${{ vars.AZURE_CLIENT_ID }}
-          tenant-id: ${{ vars.AZURE_TENANT_ID }}
-          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
-
-      - name: Resolve frontend URL
-        shell: bash
-        run: |
-          FRONTEND_URL="$(az storage account show \
-            --name "${AZURE_STORAGE_ACCOUNT_NAME}" \
-            --query 'primaryEndpoints.web' \
-            --output tsv)"
-          FRONTEND_URL="${FRONTEND_URL%/}"
-          echo "SMOKE_BASE_URL=${FRONTEND_URL}" >> "$GITHUB_ENV"
-        env:
-          AZURE_STORAGE_ACCOUNT_NAME: ${{ vars.AZURE_STORAGE_ACCOUNT_NAME }}
-
       - name: Run smoke tests
+        env:
+          SMOKE_BASE_URL: ${{ needs.deploy-frontend.outputs.frontend-origin }}
         run: npm run test:smoke
 
       - uses: actions/upload-artifact@v7
