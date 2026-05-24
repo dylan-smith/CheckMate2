@@ -300,9 +300,6 @@ jobs:
     permissions:
       id-token: write
       contents: read
-      checks: write
-      pull-requests: write
-      issues: read
     defaults:
       run:
         working-directory: frontend
@@ -343,14 +340,6 @@ jobs:
 
       - name: Run smoke tests
         run: npm run test:smoke
-
-      - name: Publish Smoke Test Results
-        uses: EnricoMi/publish-unit-test-result-action@v2
-        if: always()
-        with:
-          check_name: Smoke Test Results
-          comment_mode: always
-          files: "frontend/playwright-report/smoke-results.xml"
 
       - uses: actions/upload-artifact@v7
         if: ${{ failure() }}
