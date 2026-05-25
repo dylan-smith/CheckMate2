@@ -4,14 +4,12 @@ namespace CheckMate2.Database;
 
 public static class DbUpRunner
 {
-    private const int TimeoutSeconds = 120;
+    private const int ConnectionTimeoutSeconds = 120;
 
     public static void Run(string connectionString)
     {
-        var builder = new SqlConnectionStringBuilder(connectionString)
-        {
-            ConnectTimeout = TimeoutSeconds,
-        };
+        var builder = new SqlConnectionStringBuilder(connectionString);
+        builder.ConnectTimeout = Math.Max(builder.ConnectTimeout, ConnectionTimeoutSeconds);
         var extendedConnectionString = builder.ConnectionString;
 
         DbUp.EnsureDatabase.For.SqlDatabase(extendedConnectionString);
