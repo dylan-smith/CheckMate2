@@ -48,7 +48,7 @@ jobs:
         run: dotnet build --no-restore
 
       - name: Verify formatting
-        run: dotnet format CheckMate2.slnx --verify-no-changes --no-restore
+        run: dotnet format CheckMate.slnx --verify-no-changes --no-restore
 
       - name: Test
         run: dotnet test --no-build --verbosity normal --logger "trx;LogFileName=test-results.trx" --results-directory TestResults
@@ -180,19 +180,19 @@ jobs:
 
       - name: Restore dependencies
         run: |
-          dotnet restore backend/CheckMate2.Api/CheckMate2.Api.csproj
-          dotnet restore backend/CheckMate2.Database/CheckMate2.Database.csproj
+          dotnet restore backend/CheckMate.Api/CheckMate.Api.csproj
+          dotnet restore backend/CheckMate.Database/CheckMate.Database.csproj
 
       - name: Build
         run: |
-          dotnet build backend/CheckMate2.Api/CheckMate2.Api.csproj --configuration Release --no-restore
-          dotnet build backend/CheckMate2.Database/CheckMate2.Database.csproj --configuration Release --no-restore
+          dotnet build backend/CheckMate.Api/CheckMate.Api.csproj --configuration Release --no-restore
+          dotnet build backend/CheckMate.Database/CheckMate.Database.csproj --configuration Release --no-restore
 
       - name: Publish API
-        run: dotnet publish backend/CheckMate2.Api/CheckMate2.Api.csproj --configuration Release --no-build --output ./backend/publish
+        run: dotnet publish backend/CheckMate.Api/CheckMate.Api.csproj --configuration Release --no-build --output ./backend/publish
 
       - name: Publish Database CLI
-        run: dotnet publish backend/CheckMate2.Database/CheckMate2.Database.csproj --configuration Release --no-build --output ./backend/database-publish
+        run: dotnet publish backend/CheckMate.Database/CheckMate.Database.csproj --configuration Release --no-build --output ./backend/database-publish
 
       - name: Login to Azure
         uses: azure/login@v3
@@ -202,7 +202,7 @@ jobs:
           subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
 
       - name: Run database migrations
-        run: ./backend/database-publish/CheckMate2.Database "$CONNECTION_STRING"
+        run: ./backend/database-publish/CheckMate.Database "$CONNECTION_STRING"
         env:
           CONNECTION_STRING: ${{ secrets.AZURE_SQL_CONNECTION_STRING }}
 
@@ -212,7 +212,7 @@ jobs:
           az webapp config appsettings set \
             --name "${AZURE_BACKEND_APP_NAME}" \
             --resource-group "${AZURE_RESOURCE_GROUP}" \
-            --settings "ConnectionStrings__CheckMate2=${AZURE_SQL_CONNECTION_STRING}" \
+            --settings "ConnectionStrings__CheckMate=${AZURE_SQL_CONNECTION_STRING}" \
             --only-show-errors \
             --output none
         env:

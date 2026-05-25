@@ -4,7 +4,7 @@ test.describe('Checklist management', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/')
     await expect(
-      page.getByRole('heading', { name: 'CheckMate2' }),
+      page.getByRole('heading', { name: 'CheckMate' }),
     ).toBeVisible()
 
     // Clean up any existing checklists

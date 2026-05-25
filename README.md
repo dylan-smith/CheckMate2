@@ -1,6 +1,6 @@
-# CheckMate2
+# CheckMate
 
-[![CI](https://github.com/dylan-smith/CheckMate2/actions/workflows/ci.yml/badge.svg)](https://github.com/dylan-smith/CheckMate2/actions/workflows/ci.yml)
+[![CI](https://github.com/dylan-smith/CheckMate/actions/workflows/ci.yml/badge.svg)](https://github.com/dylan-smith/CheckMate/actions/workflows/ci.yml)
 
 A checklist management app with:
 - **Backend:** ASP.NET Core Web API (.NET 10) + Entity Framework Core + SQL Server
@@ -24,13 +24,13 @@ A checklist management app with:
 ### Backend
 
 ```bash
-cd backend/CheckMate2.Api
+cd backend/CheckMate.Api
 dotnet run
 ```
 
 The API starts at `http://localhost:5269` by default. In development mode an in-memory database is used automatically (configured in `appsettings.Development.json`).
 
-To use SQL Server for local development instead, set `UseInMemoryDatabase` to `false` and update the connection string in `backend/CheckMate2.Api/appsettings.Development.json`.
+To use SQL Server for local development instead, set `UseInMemoryDatabase` to `false` and update the connection string in `backend/CheckMate.Api/appsettings.Development.json`.
 
 ### Frontend
 
@@ -47,7 +47,7 @@ The frontend dev server starts at `http://localhost:5173`. Set the `VITE_API_BAS
 ### Running Backend Tests
 
 ```bash
-cd backend/CheckMate2.Api.Tests
+cd backend/CheckMate.Api.Tests
 dotnet test
 ```
 
@@ -76,7 +76,7 @@ npm run preview
 
 ## Deployment
 
-1. **Backend** — Publish the API with `dotnet publish -c Release` from `backend/CheckMate2.Api`. Deploy the output to any host that supports .NET 10 (Azure App Service, Docker, etc.). Configure the `ConnectionStrings:CheckMate2` setting to point to your production SQL Server instance and set `UseInMemoryDatabase` to `false`. If the frontend will be served from a different origin than the API, also configure `Cors:AllowedOrigins` to include the production frontend URL(s) so the browser can call the API.
+1. **Backend** — Publish the API with `dotnet publish -c Release` from `backend/CheckMate.Api`. Deploy the output to any host that supports .NET 10 (Azure App Service, Docker, etc.). Configure the `ConnectionStrings:CheckMate` setting to point to your production SQL Server instance and set `UseInMemoryDatabase` to `false`. If the frontend will be served from a different origin than the API, also configure `Cors:AllowedOrigins` to include the production frontend URL(s) so the browser can call the API.
 
    **Application Insights** — The API automatically sends telemetry to Azure Application Insights when a connection string is available. Set the `APPLICATIONINSIGHTS_CONNECTION_STRING` environment variable (or the `AzureMonitor:ConnectionString` app setting) to your Application Insights connection string. When using Azure App Service, you can connect Application Insights directly from the Azure Portal, which sets `APPLICATIONINSIGHTS_CONNECTION_STRING` automatically. Telemetry is silently disabled when neither value is configured (e.g. during local development).
 
@@ -85,10 +85,10 @@ npm run preview
 ## Project Structure
 
 ```
-CheckMate2/
+CheckMate/
 ├── backend/
-│   ├── CheckMate2.Api/          # ASP.NET Core Web API
-│   └── CheckMate2.Api.Tests/    # xUnit backend tests
+│   ├── CheckMate.Api/          # ASP.NET Core Web API
+│   └── CheckMate.Api.Tests/    # xUnit backend tests
 ├── frontend/                    # React + TypeScript (Vite)
 ├── CONTRIBUTING.md
 ├── SECURITY.md
@@ -127,7 +127,7 @@ The CI workflow (`.github/workflows/ci.yml`) includes deployment jobs that run a
 | Component | Azure Service | Endpoint |
 |-----------|--------------|----------|
 | Backend API | Azure App Service | `https://<AZURE_BACKEND_APP_NAME>.azurewebsites.net` |
-| Frontend | Azure Storage Account (static website) | `https://checkmate2.z22.web.core.windows.net` |
+| Frontend | Azure Storage Account (static website) | `https://checkmate.z22.web.core.windows.net` |
 
 ### Required GitHub Variables
 
@@ -137,7 +137,7 @@ The CI workflow (`.github/workflows/ci.yml`) includes deployment jobs that run a
 | `AZURE_TENANT_ID` | Azure Active Directory tenant ID |
 | `AZURE_SUBSCRIPTION_ID` | Azure subscription ID |
 | `AZURE_BACKEND_APP_NAME` | Name of the Azure App Service for the backend |
-| `AZURE_BACKEND_URL` | Public URL of the backend API (e.g. `https://checkmate2-api.azurewebsites.net`) |
+| `AZURE_BACKEND_URL` | Public URL of the backend API (e.g. `https://checkmate-api.azurewebsites.net`) |
 | `AZURE_RESOURCE_GROUP` | Azure resource group containing both the backend App Service and frontend Storage Account |
 | `AZURE_STORAGE_ACCOUNT_NAME` | Name of the Azure Storage Account used to host the frontend static website |
 
@@ -157,9 +157,9 @@ Contributions are welcome! Please read [CONTRIBUTING.md](CONTRIBUTING.md) for gu
 
 Use the provided templates when opening issues or pull requests:
 
-- [Bug Report](https://github.com/dylan-smith/CheckMate2/issues/new?template=bug_report.md)
-- [Feature Request](https://github.com/dylan-smith/CheckMate2/issues/new?template=feature_request.md)
-- [Enhancement](https://github.com/dylan-smith/CheckMate2/issues/new?template=enhancement.md)
+- [Bug Report](https://github.com/dylan-smith/CheckMate/issues/new?template=bug_report.md)
+- [Feature Request](https://github.com/dylan-smith/CheckMate/issues/new?template=feature_request.md)
+- [Enhancement](https://github.com/dylan-smith/CheckMate/issues/new?template=enhancement.md)
 
 Pull requests should follow the [PR template](./.github/PULL_REQUEST_TEMPLATE.md) checklist before requesting review.
 

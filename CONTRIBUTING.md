@@ -1,6 +1,6 @@
-# Contributing to CheckMate2
+# Contributing to CheckMate
 
-Thank you for your interest in contributing to CheckMate2! This document provides guidelines and instructions for contributing.
+Thank you for your interest in contributing to CheckMate! This document provides guidelines and instructions for contributing.
 
 ## Branch Protection
 
@@ -34,7 +34,7 @@ The `main` branch should be protected with the following rules:
 **Backend:**
 
 ```bash
-cd backend/CheckMate2.Api
+cd backend/CheckMate.Api
 dotnet run
 ```
 
@@ -56,12 +56,12 @@ See the [README](README.md) for more details.
 
 ### Backend
 
-- Code lives in `backend/CheckMate2.Api`.
-- Tests are in `backend/CheckMate2.Api.Tests` and use xUnit.
+- Code lives in `backend/CheckMate.Api`.
+- Tests are in `backend/CheckMate.Api.Tests` and use xUnit.
 - Run tests with:
 
 ```bash
-cd backend/CheckMate2.Api.Tests
+cd backend/CheckMate.Api.Tests
 dotnet test
 ```
 
@@ -91,7 +91,7 @@ npm run build
 
 ## Reporting Bugs
 
-Open a [GitHub Issue](https://github.com/dylan-smith/CheckMate2/issues) with:
+Open a [GitHub Issue](https://github.com/dylan-smith/CheckMate/issues) with:
 
 - A clear description of the problem.
 - Steps to reproduce.

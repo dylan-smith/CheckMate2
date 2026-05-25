@@ -146,7 +146,7 @@ function App() {
   return (
     <Container maxWidth="md" sx={{ py: 4 }}>
       <Typography variant="h3" component="h1" gutterBottom>
-        CheckMate2
+        CheckMate
       </Typography>
       <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
         Create, edit, and delete your custom checklists.

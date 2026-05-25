@@ -1,12 +1,12 @@
-using CheckMate2.Api.Contracts;
-using CheckMate2.Api.Controllers;
-using CheckMate2.Api.Data;
-using CheckMate2.Api.Models;
+using CheckMate.Api.Contracts;
+using CheckMate.Api.Controllers;
+using CheckMate.Api.Data;
+using CheckMate.Api.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging.Abstractions;
 
-namespace CheckMate2.Api.Tests;
+namespace CheckMate.Api.Tests;
 
 public class ChecklistsControllerTests
 {

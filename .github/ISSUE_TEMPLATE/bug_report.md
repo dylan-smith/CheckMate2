@@ -1,6 +1,6 @@
 ---
 name: Bug Report
-about: Report a bug to help us improve CheckMate2
+about: Report a bug to help us improve CheckMate
 title: "[Bug]: "
 labels: bug
 assignees: ""
