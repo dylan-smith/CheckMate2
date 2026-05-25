@@ -171,7 +171,7 @@ function App() {
               required
               placeholder="e.g. Daily chores"
             />
-            <Stack direction="row" spacing={1}>
+            <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1}>
               <Button type="submit" variant="contained" disabled={submitting}>
                 {submitting
                   ? 'Saving…'
@@ -206,28 +206,31 @@ function App() {
                 <ListItem
                   key={checklist.id}
                   divider
-                  secondaryAction={
-                    <Stack direction="row" spacing={1}>
-                      <Button
-                        type="button"
-                        variant="outlined"
-                        onClick={() => startEdit(checklist)}
-                      >
-                        Edit
-                      </Button>
-                      <Button
-                        type="button"
-                        color="error"
-                        variant="contained"
-                        onClick={() => void deleteChecklist(checklist.id)}
-                      >
-                        Delete
-                      </Button>
-                    </Stack>
-                  }
-                  sx={{ pr: '22px' }}
+                  sx={{
+                    flexDirection: { xs: 'column', sm: 'row' },
+                    alignItems: { xs: 'stretch', sm: 'center' },
+                    gap: 1,
+                    pr: 0,
+                  }}
                 >
-                  <ListItemText primary={checklist.name} />
+                  <ListItemText primary={checklist.name} sx={{ flexGrow: 1 }} />
+                  <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1}>
+                    <Button
+                      type="button"
+                      variant="outlined"
+                      onClick={() => startEdit(checklist)}
+                    >
+                      Edit
+                    </Button>
+                    <Button
+                      type="button"
+                      color="error"
+                      variant="contained"
+                      onClick={() => void deleteChecklist(checklist.id)}
+                    >
+                      Delete
+                    </Button>
+                  </Stack>
                 </ListItem>
               ))}
             </List>
