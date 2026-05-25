@@ -3,21 +3,10 @@
 
 version: 2
 updates:
-  # NuGet dependencies for the C# backend API
+  # NuGet dependencies for all C# backend projects (glob captures any new projects automatically)
   - package-ecosystem: "nuget"
-    directory: "/backend/CheckMate.Api"
-    schedule:
-      interval: "weekly"
-    open-pull-requests-limit: 10
-    reviewers:
-      - "dylan-smith"
-    labels:
-      - "dependencies"
-      - "backend"
-
-  # NuGet dependencies for the C# backend API tests
-  - package-ecosystem: "nuget"
-    directory: "/backend/CheckMate.Api.Tests"
+    directories:
+      - "/backend/*"
     schedule:
       interval: "weekly"
     open-pull-requests-limit: 10
