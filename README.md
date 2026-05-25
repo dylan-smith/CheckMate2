@@ -88,6 +88,7 @@ npm run preview
 CheckMate/
 ├── backend/
 │   ├── CheckMate.Api/          # ASP.NET Core Web API
+│   ├── CheckMate.Database/     # Database CLI project for migrations
 │   └── CheckMate.Api.Tests/    # xUnit backend tests
 ├── frontend/                    # React + TypeScript (Vite)
 ├── CONTRIBUTING.md
