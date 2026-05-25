@@ -20,7 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\CheckMate2.Api\CheckMate2.Api.csproj" />
+    <ProjectReference Include="..\CheckMate.Api\CheckMate.Api.csproj" />
   </ItemGroup>
 
 </Project>
