@@ -33,7 +33,9 @@ public static class DbUpRunner
 
     private static void RunWithRetry(string connectionString)
     {
-        for (var attempt = 1; ; attempt++)
+        var totalAttempts = MaxRetries + 1;
+
+        for (var attempt = 1; attempt <= totalAttempts; attempt++)
         {
             try
             {
@@ -54,7 +56,7 @@ public static class DbUpRunner
 
                 return;
             }
-            catch (Exception ex) when (attempt <= MaxRetries && IsTransientException(ex))
+            catch (Exception ex) when (attempt < totalAttempts && IsTransientException(ex))
             {
                 Console.ForegroundColor = ConsoleColor.Yellow;
                 Console.WriteLine($"[Retry {attempt}/{MaxRetries}] Transient database error: {ex.Message}");
