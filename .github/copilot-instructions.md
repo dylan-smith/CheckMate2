@@ -1,8 +1,8 @@
-# Copilot instructions for CheckMate2
+# Copilot instructions for CheckMate
 
 ## Project structure
-- `backend/CheckMate2.Api` is the ASP.NET Core Web API.
-- `backend/CheckMate2.Api.Tests` contains backend tests (xUnit).
+- `backend/CheckMate.Api` is the ASP.NET Core Web API.
+- `backend/CheckMate.Api.Tests` contains backend tests (xUnit).
 - `frontend` is the React + TypeScript app (Vite).
 
 ## Working conventions
@@ -15,7 +15,7 @@
 - Backend:
   - `dotnet restore`
   - `dotnet build --no-restore`
-  - `dotnet format CheckMate2.slnx --verify-no-changes --no-restore`
+  - `dotnet format CheckMate.slnx --verify-no-changes --no-restore`
   - `dotnet test --no-build`
 - Frontend:
   - `cd frontend && npm ci`

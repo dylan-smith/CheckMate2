@@ -3,9 +3,7 @@ import { test, expect } from '@playwright/test'
 test.describe('Checklist management', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/')
-    await expect(
-      page.getByRole('heading', { name: 'CheckMate2' }),
-    ).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'CheckMate' })).toBeVisible()
 
     // Clean up any existing checklists
     const deleteButtons = page.getByRole('button', { name: 'Delete' })

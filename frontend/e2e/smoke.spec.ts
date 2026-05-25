@@ -3,14 +3,14 @@ import { test, expect } from '@playwright/test'
 test('smoke: app loads and displays the main heading', async ({ page }) => {
   await page.goto('/')
 
-  await expect(page.getByRole('heading', { name: 'CheckMate2' })).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'CheckMate' })).toBeVisible()
 })
 
 test('smoke: can create, list, and delete a checklist', async ({ page }) => {
   const checklistName = `Smoke Test ${Date.now()}`
 
   await page.goto('/')
-  await expect(page.getByRole('heading', { name: 'CheckMate2' })).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'CheckMate' })).toBeVisible()
 
   // Create a checklist
   await page.getByLabel('Checklist name').fill(checklistName)

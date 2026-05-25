@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace CheckMate2.Api.Contracts;
+namespace CheckMate.Api.Contracts;
 
 public class ChecklistRequest
 {

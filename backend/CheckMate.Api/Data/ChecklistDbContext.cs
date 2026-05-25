@@ -1,7 +1,7 @@
-using CheckMate2.Api.Models;
+using CheckMate.Api.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace CheckMate2.Api.Data;
+namespace CheckMate.Api.Data;
 
 public class ChecklistDbContext(DbContextOptions<ChecklistDbContext> options) : DbContext(options)
 {

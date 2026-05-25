@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace CheckMate2.Api.Models;
+namespace CheckMate.Api.Models;
 
 public class Checklist
 {

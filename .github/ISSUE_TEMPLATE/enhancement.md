@@ -1,6 +1,6 @@
 ---
 name: Enhancement
-about: Suggest an improvement to an existing feature in CheckMate2
+about: Suggest an improvement to an existing feature in CheckMate
 title: "[Enhancement]: "
 labels: enhancement
 assignees: ""

@@ -1,6 +1,6 @@
 using Microsoft.Data.SqlClient;
 
-namespace CheckMate2.Database;
+namespace CheckMate.Database;
 
 public static class DbUpRunner
 {
