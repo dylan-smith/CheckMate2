@@ -67,18 +67,37 @@ public static class DbUpRunner
 
     private static bool IsTransientException(Exception ex)
     {
-        var sqlEx = ex as SqlException ?? ex.InnerException as SqlException;
+        var exceptions = new Queue<Exception>();
+        exceptions.Enqueue(ex);
 
-        if (sqlEx is null)
+        while (exceptions.Count > 0)
         {
-            return false;
-        }
+            var current = exceptions.Dequeue();
 
-        foreach (SqlError error in sqlEx.Errors)
-        {
-            if (Array.IndexOf(TransientSqlErrorNumbers, error.Number) >= 0)
+            if (current is AggregateException aggEx)
             {
-                return true;
+                foreach (var inner in aggEx.InnerExceptions)
+                {
+                    exceptions.Enqueue(inner);
+                }
+            }
+            else
+            {
+                if (current is SqlException sqlEx)
+                {
+                    foreach (SqlError error in sqlEx.Errors)
+                    {
+                        if (Array.IndexOf(TransientSqlErrorNumbers, error.Number) >= 0)
+                        {
+                            return true;
+                        }
+                    }
+                }
+
+                if (current.InnerException is not null)
+                {
+                    exceptions.Enqueue(current.InnerException);
+                }
             }
         }
 
