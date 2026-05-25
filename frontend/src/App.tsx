@@ -209,7 +209,6 @@ function App() {
                   sx={{
                     flexDirection: { xs: 'column', sm: 'row' },
                     alignItems: { xs: 'stretch', sm: 'center' },
-                    justifyContent: 'flex-start',
                     gap: 1,
                     pr: 0,
                   }}
