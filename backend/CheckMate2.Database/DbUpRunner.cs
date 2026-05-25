@@ -1,13 +1,21 @@
+using Microsoft.Data.SqlClient;
+
 namespace CheckMate2.Database;
 
 public static class DbUpRunner
 {
+    private const int ConnectionTimeoutSeconds = 120;
+
     public static void Run(string connectionString)
     {
-        DbUp.EnsureDatabase.For.SqlDatabase(connectionString);
+        var builder = new SqlConnectionStringBuilder(connectionString);
+        builder.ConnectTimeout = Math.Max(builder.ConnectTimeout, ConnectionTimeoutSeconds);
+        var extendedConnectionString = builder.ConnectionString;
+
+        DbUp.EnsureDatabase.For.SqlDatabase(extendedConnectionString);
 
         var upgrader = DbUp.DeployChanges.To
-            .SqlDatabase(connectionString)
+            .SqlDatabase(extendedConnectionString)
             .WithScriptsEmbeddedInAssembly(typeof(DbUpRunner).Assembly)
             .LogToConsole()
             .Build();
