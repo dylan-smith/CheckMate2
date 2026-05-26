@@ -54,14 +54,19 @@ test.describe('Accessibility', () => {
       expect(results.violations).toEqual([])
     } finally {
       // Clean up: cancel edit mode if active, then delete the checklist
-      if (await page.getByRole('button', { name: 'Cancel' }).isVisible()) {
-        await page.getByRole('button', { name: 'Cancel' }).click()
-      }
-      await page
+      const checklistItem = page
         .getByRole('listitem')
         .filter({ hasText: checklistName })
+      const cancelButton = page.getByRole('button', { name: 'Cancel' })
+
+      if (await cancelButton.isVisible()) {
+        await cancelButton.click().catch(() => {})
+      }
+
+      await checklistItem
         .getByRole('button', { name: 'Delete' })
         .click()
-    }
+        .catch(() => {})
+      await expect.soft(checklistItem).not.toBeVisible()
   })
 })
