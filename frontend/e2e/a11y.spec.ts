@@ -68,5 +68,6 @@ test.describe('Accessibility', () => {
         .click()
         .catch(() => {})
       await expect.soft(checklistItem).not.toBeVisible()
+    }
   })
 })
