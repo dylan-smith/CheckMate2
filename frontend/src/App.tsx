@@ -144,7 +144,7 @@ function App() {
   }
 
   return (
-    <Container maxWidth="md" sx={{ py: 4 }}>
+    <Container maxWidth="md" component="main" sx={{ py: 4 }}>
       <Typography variant="h3" component="h1" gutterBottom>
         CheckMate
       </Typography>
