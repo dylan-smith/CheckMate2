@@ -91,6 +91,10 @@ CheckMate/
 │   ├── CheckMate.Database/     # Database CLI project for migrations
 │   └── CheckMate.Api.Tests/    # xUnit backend tests
 ├── frontend/                    # React + TypeScript (Vite)
+├── infra/                       # Bicep Infrastructure as Code
+│   ├── main.bicep               # Root Bicep template
+│   ├── main.bicepparam          # Example parameter values
+│   └── modules/                 # Reusable Bicep modules
 ├── CONTRIBUTING.md
 ├── SECURITY.md
 ├── LICENSE
@@ -123,12 +127,45 @@ npm run test:e2e:ui
 
 The CI workflow (`.github/workflows/ci.yml`) includes deployment jobs that run after all checks pass. Deployment only runs on pushes to `main` (not on pull requests).
 
+### Infrastructure as Code
+
+All Azure resources are defined using [Bicep](https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/overview) templates located in the `infra/` directory:
+
+```
+infra/
+├── main.bicep           # Root template — wires all modules together
+├── main.bicepparam      # Example/default parameter values
+└── modules/
+    ├── appservice.bicep # App Service Plan + App Service (Linux/.NET 10)
+    ├── monitoring.bicep # Log Analytics Workspace + Application Insights
+    ├── sql.bicep        # Azure SQL Server + Database
+    └── storage.bicep    # Storage Account with static website enabled
+```
+
+The `deploy-infrastructure` CI job runs `infra/main.bicep` on every push to `main`, ensuring the Azure environment is always in sync with the declared configuration. All other deployment jobs depend on this job.
+
+#### Deploying Infrastructure Manually
+
+To provision or update infrastructure outside of CI, make sure you are logged in to Azure (`az login`), then run:
+
+```bash
+az deployment group create \
+  --resource-group <AZURE_RESOURCE_GROUP> \
+  --template-file infra/main.bicep \
+  --parameters infra/main.bicepparam \
+  --parameters sqlAdminPassword=<password>
+```
+
+Customise `infra/main.bicepparam` with your own resource names and region before deploying.
+
 ### Deployment Architecture
 
 | Component | Azure Service | Endpoint |
 |-----------|--------------|----------|
-| Backend API | Azure App Service | `https://<AZURE_BACKEND_APP_NAME>.azurewebsites.net` |
-| Frontend | Azure Storage Account (static website) | `https://checkmate.z22.web.core.windows.net` |
+| Backend API | Azure App Service (Linux/.NET 10) | `https://<AZURE_BACKEND_APP_NAME>.azurewebsites.net` |
+| Frontend | Azure Storage Account (static website) | `https://<AZURE_STORAGE_ACCOUNT_NAME>.z22.web.core.windows.net` |
+| Database | Azure SQL Server + Database | — |
+| Monitoring | Log Analytics + Application Insights | — |
 
 ### Required GitHub Variables
 
@@ -137,16 +174,25 @@ The CI workflow (`.github/workflows/ci.yml`) includes deployment jobs that run a
 | `AZURE_CLIENT_ID` | Azure service principal client ID (for OIDC login) |
 | `AZURE_TENANT_ID` | Azure Active Directory tenant ID |
 | `AZURE_SUBSCRIPTION_ID` | Azure subscription ID |
+| `AZURE_RESOURCE_GROUP` | Azure resource group for all resources |
+| `AZURE_LOCATION` | Azure region (e.g. `eastus`) |
 | `AZURE_BACKEND_APP_NAME` | Name of the Azure App Service for the backend |
 | `AZURE_BACKEND_URL` | Public URL of the backend API (e.g. `https://checkmate-api.azurewebsites.net`) |
-| `AZURE_RESOURCE_GROUP` | Azure resource group containing both the backend App Service and frontend Storage Account |
-| `AZURE_STORAGE_ACCOUNT_NAME` | Name of the Azure Storage Account used to host the frontend static website |
+| `AZURE_APP_SERVICE_PLAN_NAME` | Name of the Azure App Service Plan |
+| `AZURE_APP_SERVICE_PLAN_SKU` | App Service Plan SKU (e.g. `B1`) |
+| `AZURE_STORAGE_ACCOUNT_NAME` | Name of the Azure Storage Account for the frontend |
+| `AZURE_SQL_SERVER_NAME` | Name of the Azure SQL Server |
+| `AZURE_SQL_DATABASE_NAME` | Name of the SQL Database (e.g. `CheckMate`) |
+| `AZURE_SQL_ADMIN_LOGIN` | SQL Server administrator login name |
+| `AZURE_LOG_ANALYTICS_WORKSPACE_NAME` | Name of the Log Analytics Workspace |
+| `AZURE_APP_INSIGHTS_NAME` | Name of the Application Insights component |
 
 ### Required GitHub Secrets
 
 | Secret | Description |
 |--------|-------------|
-| `AZURE_SQL_CONNECTION_STRING` | SQL Server connection string for the deployed database |
+| `AZURE_SQL_CONNECTION_STRING` | Full SQL Server connection string used at runtime |
+| `AZURE_SQL_ADMIN_PASSWORD` | SQL Server administrator password (used during infrastructure provisioning) |
 
 ### Environment
 
