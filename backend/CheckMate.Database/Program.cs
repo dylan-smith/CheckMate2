@@ -1,9 +1,9 @@
-using CheckMate2.Database;
+using CheckMate.Database;
 
 if (args.Length == 0)
 {
     Console.ForegroundColor = ConsoleColor.Red;
-    Console.WriteLine("Usage: CheckMate2.Database <connection-string>");
+    Console.WriteLine("Usage: CheckMate.Database <connection-string>");
     Console.ResetColor();
     return -1;
 }

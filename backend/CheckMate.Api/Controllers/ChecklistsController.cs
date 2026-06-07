@@ -1,10 +1,10 @@
-using CheckMate2.Api.Contracts;
-using CheckMate2.Api.Data;
-using CheckMate2.Api.Models;
+using CheckMate.Api.Contracts;
+using CheckMate.Api.Data;
+using CheckMate.Api.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace CheckMate2.Api.Controllers;
+namespace CheckMate.Api.Controllers;
 
 /// <remarks>
 /// Log statements use structured logging with typed route parameters (e.g. int id) only.

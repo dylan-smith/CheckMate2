@@ -1,6 +1,6 @@
 ---
 name: Feature Request
-about: Suggest a new feature for CheckMate2
+about: Suggest a new feature for CheckMate
 title: "[Feature]: "
 labels: enhancement
 assignees: ""

@@ -1,5 +1,5 @@
 using Azure.Monitor.OpenTelemetry.AspNetCore;
-using CheckMate2.Api.Data;
+using CheckMate.Api.Data;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -67,13 +67,13 @@ if (useInMemoryDatabase)
 {
     Console.WriteLine("[Startup] Database mode: in-memory.");
     builder.Services.AddDbContext<ChecklistDbContext>(options =>
-        options.UseInMemoryDatabase("CheckMate2"));
+        options.UseInMemoryDatabase("CheckMate"));
 }
 else
 {
     Console.WriteLine("[Startup] Database mode: SQL Server.");
-    var connectionString = builder.Configuration.GetConnectionString("CheckMate2")
-        ?? throw new InvalidOperationException("Connection string 'CheckMate2' not found.");
+    var connectionString = builder.Configuration.GetConnectionString("CheckMate")
+        ?? throw new InvalidOperationException("Connection string 'CheckMate' not found.");
 
     builder.Services.AddDbContext<ChecklistDbContext>(options =>
         options.UseSqlServer(connectionString));

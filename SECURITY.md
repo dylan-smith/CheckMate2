@@ -2,7 +2,7 @@
 
 ## Reporting a Vulnerability
 
-If you discover a security vulnerability in CheckMate2, please report it responsibly.
+If you discover a security vulnerability in CheckMate, please report it responsibly.
 
 **Do not** open a public GitHub issue for security vulnerabilities.
 

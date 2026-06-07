@@ -48,7 +48,7 @@ jobs:
         run: dotnet build --no-restore
 
       - name: Verify formatting
-        run: dotnet format CheckMate2.slnx --verify-no-changes --no-restore
+        run: dotnet format CheckMate.slnx --verify-no-changes --no-restore
 
       - name: Test
         run: dotnet test --no-build --verbosity normal --logger "trx;LogFileName=test-results.trx" --results-directory TestResults
@@ -183,19 +183,19 @@ jobs:
 
       - name: Restore dependencies
         run: |
-          dotnet restore backend/CheckMate2.Api/CheckMate2.Api.csproj
-          dotnet restore backend/CheckMate2.Database/CheckMate2.Database.csproj
+          dotnet restore backend/CheckMate.Api/CheckMate.Api.csproj
+          dotnet restore backend/CheckMate.Database/CheckMate.Database.csproj
 
       - name: Build
         run: |
-          dotnet build backend/CheckMate2.Api/CheckMate2.Api.csproj --configuration Release --no-restore
-          dotnet build backend/CheckMate2.Database/CheckMate2.Database.csproj --configuration Release --no-restore
+          dotnet build backend/CheckMate.Api/CheckMate.Api.csproj --configuration Release --no-restore
+          dotnet build backend/CheckMate.Database/CheckMate.Database.csproj --configuration Release --no-restore
 
       - name: Publish API
-        run: dotnet publish backend/CheckMate2.Api/CheckMate2.Api.csproj --configuration Release --no-build --output ./backend/publish
+        run: dotnet publish backend/CheckMate.Api/CheckMate.Api.csproj --configuration Release --no-build --output ./backend/publish
 
       - name: Publish Database CLI
-        run: dotnet publish backend/CheckMate2.Database/CheckMate2.Database.csproj --configuration Release --no-build --output ./backend/database-publish
+        run: dotnet publish backend/CheckMate.Database/CheckMate.Database.csproj --configuration Release --no-build --output ./backend/database-publish
 
       - name: Login to Azure
         uses: azure/login@v3
@@ -205,7 +205,7 @@ jobs:
           subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
 
       - name: Run database migrations
-        run: ./backend/database-publish/CheckMate2.Database "$CONNECTION_STRING"
+        run: ./backend/database-publish/CheckMate.Database "$CONNECTION_STRING"
         env:
           CONNECTION_STRING: ${{ secrets.AZURE_SQL_CONNECTION_STRING }}
 
@@ -215,7 +215,7 @@ jobs:
           az webapp config appsettings set \
             --name "${AZURE_BACKEND_APP_NAME}" \
             --resource-group "${AZURE_RESOURCE_GROUP}" \
-            --settings "ConnectionStrings__CheckMate2=${AZURE_SQL_CONNECTION_STRING}" \
+            --settings "ConnectionStrings__CheckMate=${AZURE_SQL_CONNECTION_STRING}" \
             --only-show-errors \
             --output none
         env:
@@ -235,6 +235,8 @@ jobs:
     needs: deploy-backend
     if: github.ref == 'refs/heads/main'
     environment: production
+    outputs:
+      frontend-origin: ${{ steps['resolve-frontend-origin'].outputs['frontend-origin'] }}
     permissions:
       id-token: write
       contents: read
@@ -272,6 +274,7 @@ jobs:
           AZURE_STORAGE_ACCOUNT_NAME: ${{ vars.AZURE_STORAGE_ACCOUNT_NAME }}
 
       - name: Resolve frontend origin
+        id: resolve-frontend-origin
         shell: bash
         run: |
           FRONTEND_ORIGIN="$(az storage account show \
@@ -280,6 +283,7 @@ jobs:
             --output tsv)"
           FRONTEND_ORIGIN="${FRONTEND_ORIGIN%/}"
           echo "FRONTEND_ORIGIN=${FRONTEND_ORIGIN}" >> "$GITHUB_ENV"
+          echo "frontend-origin=${FRONTEND_ORIGIN}" >> "$GITHUB_OUTPUT"
         env:
           AZURE_STORAGE_ACCOUNT_NAME: ${{ vars.AZURE_STORAGE_ACCOUNT_NAME }}
 
@@ -293,3 +297,44 @@ jobs:
         env:
           AZURE_BACKEND_APP_NAME: ${{ vars.AZURE_BACKEND_APP_NAME }}
           AZURE_RESOURCE_GROUP: ${{ vars.AZURE_RESOURCE_GROUP }}
+
+  smoke-tests:
+    name: Smoke Tests
+    runs-on: ubuntu-latest
+    needs: deploy-frontend
+    if: github.ref == 'refs/heads/main'
+    environment: production
+    permissions:
+      contents: read
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: '20'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browser
+        run: npx playwright install chromium --with-deps
+
+      - name: Run smoke tests
+        env:
+          SMOKE_BASE_URL: ${{ needs['deploy-frontend'].outputs['frontend-origin'] }}
+        run: npm run test:smoke
+
+      - uses: actions/upload-artifact@v7
+        if: ${{ failure() }}
+        with:
+          name: smoke-test-report
+          path: |
+            frontend/playwright-report/smoke/
+            frontend/playwright-report/smoke-results.xml
+          retention-days: 30
