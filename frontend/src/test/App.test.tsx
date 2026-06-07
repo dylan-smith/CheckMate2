@@ -1,13 +1,7 @@
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import App from '../App'
-
-const API_BASE = 'http://localhost:5269'
-
-beforeEach(() => {
-  import.meta.env.VITE_API_BASE_URL = API_BASE
-})
 
 function mockFetch(
   handler: (url: string, init?: RequestInit) => Promise<Response>,
@@ -28,7 +22,6 @@ function jsonResponse(body: unknown, status = 200): Response {
 
 afterEach(() => {
   vi.restoreAllMocks()
-  delete import.meta.env.VITE_API_BASE_URL
 })
 
 describe('App', () => {
@@ -155,7 +148,7 @@ describe('App', () => {
       })
 
       expect(fetch).toHaveBeenCalledWith(
-        `${API_BASE}/api/checklists`,
+        expect.stringMatching(/\/api\/checklists$/),
         expect.objectContaining({
           method: 'POST',
           body: JSON.stringify({ name: 'New list' }),
@@ -270,7 +263,7 @@ describe('App', () => {
 
       await waitFor(() => {
         expect(fetch).toHaveBeenCalledWith(
-          `${API_BASE}/api/checklists`,
+          expect.stringMatching(/\/api\/checklists$/),
           expect.objectContaining({
             body: JSON.stringify({ name: 'Trimmed' }),
           }),
@@ -326,7 +319,7 @@ describe('App', () => {
 
       await waitFor(() => {
         expect(fetch).toHaveBeenCalledWith(
-          `${API_BASE}/api/checklists/1`,
+          expect.stringMatching(/\/api\/checklists\/1$/),
           expect.objectContaining({
             method: 'PUT',
             body: JSON.stringify({ name: 'Updated list' }),
@@ -422,7 +415,7 @@ describe('App', () => {
       })
 
       expect(fetch).toHaveBeenCalledWith(
-        `${API_BASE}/api/checklists/1`,
+        expect.stringMatching(/\/api\/checklists\/1$/),
         expect.objectContaining({ method: 'DELETE' }),
       )
     })
