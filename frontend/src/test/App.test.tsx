@@ -35,13 +35,13 @@ describe('App', () => {
 
       render(<App />)
 
-      expect(screen.getByText('Loading…')).toBeInTheDocument()
+      expect(screen.getByLabelText('Loading')).toBeInTheDocument()
 
       await waitFor(() => {
         expect(screen.getByText('Grocery list')).toBeInTheDocument()
       })
       expect(screen.getByText('Daily chores')).toBeInTheDocument()
-      expect(screen.queryByText('Loading…')).not.toBeInTheDocument()
+      expect(screen.queryByLabelText('Loading')).not.toBeInTheDocument()
     })
 
     it('shows "No checklists yet." when the list is empty', async () => {
@@ -88,14 +88,14 @@ describe('App', () => {
       render(<App />)
 
       expect(
-        screen.getByRole('heading', { level: 1, name: 'CheckMate2' }),
+        screen.getByRole('heading', { level: 1, name: 'CheckMate' }),
       ).toBeInTheDocument()
       expect(
         screen.getByText('Create, edit, and delete your custom checklists.'),
       ).toBeInTheDocument()
 
       await waitFor(() => {
-        expect(screen.queryByText('Loading…')).not.toBeInTheDocument()
+        expect(screen.queryByLabelText('Loading')).not.toBeInTheDocument()
       })
     })
 
@@ -107,13 +107,15 @@ describe('App', () => {
       expect(
         screen.getByRole('heading', { level: 2, name: 'Create checklist' }),
       ).toBeInTheDocument()
-      expect(screen.getByLabelText('Checklist name')).toBeInTheDocument()
+      expect(
+        screen.getByLabelText('Checklist name', { exact: false }),
+      ).toBeInTheDocument()
       expect(
         screen.getByRole('button', { name: 'Create checklist' }),
       ).toBeInTheDocument()
 
       await waitFor(() => {
-        expect(screen.queryByText('Loading…')).not.toBeInTheDocument()
+        expect(screen.queryByLabelText('Loading')).not.toBeInTheDocument()
       })
     })
   })
@@ -140,7 +142,7 @@ describe('App', () => {
         expect(screen.getByText('No checklists yet.')).toBeInTheDocument()
       })
 
-      await user.type(screen.getByLabelText('Checklist name'), 'New list')
+      await user.type(screen.getByLabelText('Checklist name', { exact: false }), 'New list')
       await user.click(screen.getByRole('button', { name: 'Create checklist' }))
 
       await waitFor(() => {
@@ -175,7 +177,7 @@ describe('App', () => {
         expect(screen.getByText('Existing')).toBeInTheDocument()
       })
 
-      await user.type(screen.getByLabelText('Checklist name'), 'Existing')
+      await user.type(screen.getByLabelText('Checklist name', { exact: false }), 'Existing')
       await user.click(screen.getByRole('button', { name: 'Create checklist' }))
 
       await waitFor(() => {
@@ -201,7 +203,7 @@ describe('App', () => {
         expect(screen.getByText('No checklists yet.')).toBeInTheDocument()
       })
 
-      await user.type(screen.getByLabelText('Checklist name'), 'Test')
+      await user.type(screen.getByLabelText('Checklist name', { exact: false }), 'Test')
       await user.click(screen.getByRole('button', { name: 'Create checklist' }))
 
       await waitFor(() => {
@@ -232,7 +234,7 @@ describe('App', () => {
         expect(screen.getByText('No checklists yet.')).toBeInTheDocument()
       })
 
-      await user.type(screen.getByLabelText('Checklist name'), 'Test')
+      await user.type(screen.getByLabelText('Checklist name', { exact: false }), 'Test')
       await user.click(screen.getByRole('button', { name: 'Create checklist' }))
 
       await waitFor(() => {
@@ -258,7 +260,7 @@ describe('App', () => {
         expect(screen.getByText('No checklists yet.')).toBeInTheDocument()
       })
 
-      await user.type(screen.getByLabelText('Checklist name'), '  Trimmed  ')
+      await user.type(screen.getByLabelText('Checklist name', { exact: false }), '  Trimmed  ')
       await user.click(screen.getByRole('button', { name: 'Create checklist' }))
 
       await waitFor(() => {
@@ -289,7 +291,7 @@ describe('App', () => {
       expect(
         screen.getByRole('heading', { level: 2, name: 'Edit checklist' }),
       ).toBeInTheDocument()
-      expect(screen.getByLabelText('Checklist name')).toHaveValue('My list')
+      expect(screen.getByLabelText('Checklist name', { exact: false })).toHaveValue('My list')
       expect(
         screen.getByRole('button', { name: 'Save changes' }),
       ).toBeInTheDocument()
@@ -313,8 +315,8 @@ describe('App', () => {
       })
 
       await user.click(screen.getByRole('button', { name: 'Edit' }))
-      await user.clear(screen.getByLabelText('Checklist name'))
-      await user.type(screen.getByLabelText('Checklist name'), 'Updated list')
+      await user.clear(screen.getByLabelText('Checklist name', { exact: false }))
+      await user.type(screen.getByLabelText('Checklist name', { exact: false }), 'Updated list')
       await user.click(screen.getByRole('button', { name: 'Save changes' }))
 
       await waitFor(() => {
@@ -341,14 +343,14 @@ describe('App', () => {
 
       await user.click(screen.getByRole('button', { name: 'Edit' }))
 
-      expect(screen.getByLabelText('Checklist name')).toHaveValue('My list')
+      expect(screen.getByLabelText('Checklist name', { exact: false })).toHaveValue('My list')
 
       await user.click(screen.getByRole('button', { name: 'Cancel' }))
 
       expect(
         screen.getByRole('heading', { level: 2, name: 'Create checklist' }),
       ).toBeInTheDocument()
-      expect(screen.getByLabelText('Checklist name')).toHaveValue('')
+      expect(screen.getByLabelText('Checklist name', { exact: false })).toHaveValue('')
       expect(
         screen.queryByRole('button', { name: 'Cancel' }),
       ).not.toBeInTheDocument()
@@ -374,8 +376,8 @@ describe('App', () => {
       })
 
       await user.click(screen.getByRole('button', { name: 'Edit' }))
-      await user.clear(screen.getByLabelText('Checklist name'))
-      await user.type(screen.getByLabelText('Checklist name'), 'Duplicate')
+      await user.clear(screen.getByLabelText('Checklist name', { exact: false }))
+      await user.type(screen.getByLabelText('Checklist name', { exact: false }), 'Duplicate')
       await user.click(screen.getByRole('button', { name: 'Save changes' }))
 
       await waitFor(() => {
@@ -532,7 +534,7 @@ describe('App', () => {
       expect(
         screen.getByRole('heading', { level: 2, name: 'Edit checklist' }),
       ).toBeInTheDocument()
-      expect(screen.getByLabelText('Checklist name')).toHaveValue('Item A')
+      expect(screen.getByLabelText('Checklist name', { exact: false })).toHaveValue('Item A')
 
       const deleteButtons = screen.getAllByRole('button', { name: 'Delete' })
       await user.click(deleteButtons[0])
@@ -542,7 +544,7 @@ describe('App', () => {
           screen.getByRole('heading', { level: 2, name: 'Create checklist' }),
         ).toBeInTheDocument()
       })
-      expect(screen.getByLabelText('Checklist name')).toHaveValue('')
+      expect(screen.getByLabelText('Checklist name', { exact: false })).toHaveValue('')
     })
   })
 
@@ -559,7 +561,7 @@ describe('App', () => {
       })
 
       // The input has required attribute, so we need to type whitespace then submit
-      const input = screen.getByLabelText('Checklist name')
+      const input = screen.getByLabelText('Checklist name', { exact: false })
       await user.type(input, '   ')
       // Submit the form via the button
       await user.click(screen.getByRole('button', { name: 'Create checklist' }))
@@ -593,7 +595,7 @@ describe('App', () => {
       })
 
       // Trigger an error
-      await user.type(screen.getByLabelText('Checklist name'), 'Fail')
+      await user.type(screen.getByLabelText('Checklist name', { exact: false }), 'Fail')
       await user.click(screen.getByRole('button', { name: 'Create checklist' }))
 
       await waitFor(() => {
